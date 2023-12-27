@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import ListRow from "../../../components/ListRow.tsx"
 import { School } from "../../../database/models/school.ts"
-import { getSchools } from "../../../database/database.tsx"
+import { getSchools } from "../../../database/database.ts"
 
 export default function SchoolsList() {
 

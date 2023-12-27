@@ -1,10 +1,27 @@
 import { useState } from "react"
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { toast } from "react-toastify"
 
+import { auth } from "../../database/firebase.ts"
 import LoginForm, { LoginSubmit } from "./components/LoginForm.tsx"
 import RegistrationForm, { RegistrationSubmit } from "./components/RegistrationForm.tsx"
 
 async function onLoginFormSubmit({ email, password }: LoginSubmit) {
-    console.log(email, password)
+    try {
+        await signInWithEmailAndPassword(auth, email, password)
+    } catch (error) {
+        const code = (error as Error).message
+
+        if (code.includes("auth/invalid-email")) {
+            toast.error("Invalid email")
+        } else if (code.includes("auth/invalid-password")) {
+            toast.error("Invalid password")
+        } else if (code.includes("auth/invalid-credential")) {
+            toast.error("Invalid credentials")
+        } else {
+            toast.error(code)
+        }
+    }
 }
 
 async function onRegistrationFormSubmit({ email, password, confirmPassword }: RegistrationSubmit) {

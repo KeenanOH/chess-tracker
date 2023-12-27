@@ -5,7 +5,7 @@ import ListRow from "../../components/ListRow.tsx"
 import Button from "../../components/Button.tsx"
 import Footer from "../../components/Footer.tsx"
 import Calendar from "../../components/Calendar.tsx"
-import SchoolsList from "./components/SchoolsList.tsx";
+import SchoolsList from "./components/SchoolsList.tsx"
 
 
 export default function AdminView() {

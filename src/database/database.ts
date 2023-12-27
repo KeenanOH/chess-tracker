@@ -1,7 +1,7 @@
 import { collection, getDocs } from "firebase/firestore"
 
 import { db } from "./firebase.ts"
-import {School} from "./models/school.ts";
+import { School } from "./models/school.ts"
 
 
 export async function getSchools() {
@@ -15,3 +15,4 @@ export async function getSchools() {
 
     return schools
 }
+
