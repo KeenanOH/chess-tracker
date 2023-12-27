@@ -4,8 +4,40 @@ service cloud.firestore {
 
   match /databases/{database}/documents {
 
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+    	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin;
+    }
+
+    function isHomeSchool() {
+    	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == get(/databases/$(database)/documents/matches/$(request.resource.data.match[4])).data.homeSchool[4];
+    }
+
+    function isAwaySchool() {
+    	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == get(/databases/$(database)/documents/matches/$(request.resource.data.match[4])).data.awaySchool[4];
+    }
+
+    match /schools/{schoolId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /schools/{schoolId}/players/{playerId} {
+    	allow read: if isAuthenticated();
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == schoolId || isAdmin();
+    }
+
+    match /matches/{matchId} {
+    	allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /matches/{matchId}/boards/{boardId} {
+    	allow read: if isAuthenticated();
+      allow write: if isHomeSchool() || isAwaySchool() || isAdmin();
     }
 
   }
