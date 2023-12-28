@@ -6,7 +6,7 @@ describe("Players Tests", () => {
     test("Get Players", async () => {
         const players = await getPlayers("lezb3nv0do3Oy7ad7t7u")
         const firstNames = players.map((player) => { return player.firstName })
-        expect(firstNames.includes("Keenan")).toBe(true)
+        expect(firstNames).toContain("Keenan")
     })
 
     test("Create Player", async () => {
@@ -14,7 +14,7 @@ describe("Players Tests", () => {
 
         const players = await getPlayers("lezb3nv0do3Oy7ad7t7u")
         const lastNames = players.map((player) => { return player.lastName })
-        expect(lastNames.includes("Nanami")).toBe(true)
+        expect(lastNames).toContain("Nanami")
     })
 
     afterAll(async () => {

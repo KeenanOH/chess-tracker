@@ -6,7 +6,7 @@ describe("Schools Tests", () => {
     test("Get Schools", async () => {
         const schools = await getSchools()
         const names = schools.map((school) => { return school.name })
-        expect(names.includes("Hersey")).toBe(true)
+        expect(names).toContain("Hersey")
     })
 
     test("Create School", async () => {
@@ -14,7 +14,7 @@ describe("Schools Tests", () => {
 
         const schools = await getSchools()
         const names = schools.map((school) => { return school.name })
-        expect(names.includes("Jujutsu High")).toBe(true)
+        expect(names).toContain("Jujutsu High")
     })
 
     afterAll(async () => {
