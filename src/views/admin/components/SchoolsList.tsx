@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 
 import ListRow from "../../../components/ListRow.tsx"
-import { School } from "../../../database/models/school.ts"
-import { getSchools } from "../../../database/database.ts"
+import { getSchools, School } from "../../../database/schools.ts"
+
 
 export default function SchoolsList() {
 
