@@ -10,7 +10,7 @@ export default function InfoSection() {
                     <p className="text-3xl opacity-50">Getting Started</p>
                 </div>
                 <div className="flex flex-col mx-16 bg">
-                    <div className="md:flex md:flex-row space-y-16 md:space-x-8 justify-center">
+                    <div className="md:flex md:flex-row md:space-x-8 justify-center">
                         <div className="rounded-xl px-12 py-20 shadow-lg">
                             <img className="h-12 w-12" src={ signUpIconUrl } alt="Sign Up Icon"/>
                             <p className="text-3xl font-bold">1. Sign Up</p>

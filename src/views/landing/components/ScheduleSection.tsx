@@ -1,27 +1,34 @@
-import React, { useState } from "react"
+import React from "react"
+
 import Calendar from "../../../components/Calendar.tsx"
-import ListRow from "../../../components/ListRow.tsx"
+import MatchesList from "../../../components/MatchesList.tsx"
+import { Match } from "../../../database/matches.ts"
 
-export default function ScheduleSection() {
+interface ScheduleSectionProps {
+    matches: Match[]
+    date: string
+    setDate: React.Dispatch<React.SetStateAction<string>>
+    updateMatches: (date: Date) => Promise<void>
+}
 
-    const [date, setDate] = useState({
-        display: "",
-        value: ""
-    })
+export default function ScheduleSection({ matches, date, setDate, updateMatches }: ScheduleSectionProps) {
 
     return (
         <div id="schedule-section" className="flex flex-col items-center pt-16">
             <div className="flex flex-col py-16">
-                <Calendar setDate={ setDate } />
+                <Calendar setDate={ setDate } onChange={ updateMatches } />
             </div>
 
             <div className="w-full">
                 <div className="mx-16 2xl:mx-96">
-                    <p className="text-3xl opacity-50 pb-5">{ date.display }</p>
+                    <p className="text-3xl opacity-50 pb-5">{ date }</p>
                     <div className="space-y-5">
-                        <ListRow>Test</ListRow>
-                        <ListRow>Test</ListRow>
-                        <ListRow>Test</ListRow>
+                        {
+                            date === "" ?
+                                <p className="text-center pt-16">Select a date to view matches.</p>
+                                :
+                                <MatchesList matches={ matches } />
+                        }
                     </div>
                 </div>
             </div>

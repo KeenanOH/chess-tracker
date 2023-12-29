@@ -1,7 +1,7 @@
 import { ReactElement } from "react"
-import { User } from "firebase/auth"
 
 import LoginView from "../views/login/LoginView.tsx"
+import { User } from "../database/users.ts"
 
 interface AuthViewProps {
     user: User | null

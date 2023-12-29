@@ -20,6 +20,11 @@ service cloud.firestore {
     	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == get(/databases/$(database)/documents/matches/$(request.resource.data.match[4])).data.awaySchool[4];
     }
 
+    match /users/{userId} {
+    	allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /schools/{schoolId} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();

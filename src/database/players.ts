@@ -17,12 +17,10 @@ export async function getPlayers(schoolId: string): Promise<Player[]> {
     })
 }
 
-export async function createPlayer(schoolId: string, firstName: string, lastName: string): Promise<Player> {
-    const docRef = await addDoc(collection(db, "schools", schoolId, "players"), {
+export async function createPlayer(schoolId: string, firstName: string, lastName: string) {
+    await addDoc(collection(db, "schools", schoolId, "players"), {
         firstName, lastName
     })
-
-    return { id: docRef.id, firstName, lastName}
 }
 
 export async function deletePlayer(schoolId: string, playerId: string) {

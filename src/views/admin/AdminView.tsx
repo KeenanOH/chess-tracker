@@ -10,10 +10,7 @@ import SchoolsList from "./components/SchoolsList.tsx"
 
 export default function AdminView() {
 
-    const [date, setDate] = useState({
-        display: "",
-        value: ""
-    })
+    const [date, setDate] = useState("")
 
     return (
         <div>
@@ -25,7 +22,7 @@ export default function AdminView() {
 
                 <div className="w-full">
                     <div className="mx-16 2xl:mx-96">
-                        <p className="text-3xl opacity-50 pb-5">{ date.display }</p>
+                        <p className="text-3xl opacity-50 pb-5">{ date }</p>
                         <div className="space-y-5">
                             <ListRow>Test</ListRow>
                             <ListRow>Test</ListRow>
@@ -47,17 +44,6 @@ export default function AdminView() {
                             <div className="w-48">
                                 <Button onClick={ () => { } }>Add School</Button>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="w-full pt-32">
-                    <div className="mx-16 2xl:mx-96">
-                        <p className="text-3xl opacity-50 pb-5">Users</p>
-                        <div className="space-y-5">
-                            <ListRow>KeenanOH</ListRow>
-                            <ListRow>Bob123</ListRow>
-                            <ListRow>JoeDoe</ListRow>
                         </div>
                     </div>
                 </div>
