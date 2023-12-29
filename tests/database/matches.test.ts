@@ -1,4 +1,4 @@
-import {createMatch, deleteMatch, getMatches} from "../../src/database/matches"
+import { createMatch, deleteMatch, getMatches } from "../../src/database/matches"
 
 
 describe("Matches Tests", () => {
