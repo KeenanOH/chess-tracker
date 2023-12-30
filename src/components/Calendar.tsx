@@ -4,7 +4,7 @@ import RCalendar from "react-calendar"
 import "./Calendar.css"
 
 interface CalendarProps {
-    setDate: React.Dispatch<React.SetStateAction<string>>
+    setDate: React.Dispatch<React.SetStateAction<Date | undefined>>
     onChange?: (date: Date) => Promise<void>
 }
 
@@ -15,7 +15,7 @@ export default function Calendar({ setDate, onChange }: CalendarProps) {
             calendarType="gregory"
             minDetail="month"
             onClickDay={ async (date) => {
-                setDate(date.toDateString())
+                setDate(date)
                 if (onChange) await onChange(date)
             } }
         />
