@@ -1,36 +1,43 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { toast } from "react-toastify"
 
 import { auth } from "../../database/firebase.ts"
 import LoginForm, { LoginSubmit } from "./components/LoginForm.tsx"
 import RegistrationForm, { RegistrationSubmit } from "./components/RegistrationForm.tsx"
+import { getUser, User } from "../../database/users.ts"
 
-async function onLoginFormSubmit({ email, password }: LoginSubmit) {
-    try {
-        await signInWithEmailAndPassword(auth, email, password)
-    } catch (error) {
-        const code = (error as Error).message
-
-        if (code.includes("auth/invalid-email")) {
-            toast.error("Invalid email")
-        } else if (code.includes("auth/invalid-password")) {
-            toast.error("Invalid password")
-        } else if (code.includes("auth/invalid-credential")) {
-            toast.error("Invalid credentials")
-        } else {
-            toast.error(code)
-        }
-    }
+interface LoginViewProps {
+    setUser: React.Dispatch<React.SetStateAction<User | null>>
 }
 
-async function onRegistrationFormSubmit({ email, password, confirmPassword }: RegistrationSubmit) {
-    console.log(email, password, confirmPassword)
-}
-
-export default function LoginView() {
+export default function LoginView({ setUser }: LoginViewProps) {
 
     const [showingLoginForm, setShowingLoginForm] = useState(true)
+
+    async function onLoginFormSubmit({ email, password }: LoginSubmit) {
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            const user = await getUser(userCredential.user.uid)
+            setUser(user)
+        } catch (error) {
+            const code = (error as Error).message
+
+            if (code.includes("auth/invalid-email")) {
+                toast.error("Invalid email")
+            } else if (code.includes("auth/invalid-password")) {
+                toast.error("Invalid password")
+            } else if (code.includes("auth/invalid-credential")) {
+                toast.error("Invalid credentials")
+            } else {
+                toast.error(code)
+            }
+        }
+    }
+
+    async function onRegistrationFormSubmit({ email, password, confirmPassword }: RegistrationSubmit) {
+        console.log(email, password, confirmPassword)
+    }
 
     return (
         <div>

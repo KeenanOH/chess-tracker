@@ -22,6 +22,8 @@ service cloud.firestore {
 
     match /users/{userId} {
     	allow read: if true;
+      allow create: if request.auth.uid != null && !exists(/databases/$(database)/documents/users/$(request.auth.uid)) && request.resource.data.keys().hasAll(["schoolId", "isAdmin"]) && !request.resource.data.isAdmin;
+      allow update: if request.auth.uid != null && request.auth.uid == userId && request.resource.data.keys().hasOnly(["schoolId"]);
       allow write: if isAdmin();
     }
 
@@ -32,7 +34,8 @@ service cloud.firestore {
 
     match /schools/{schoolId}/players/{playerId} {
     	allow read: if isAuthenticated();
-      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == schoolId || isAdmin();
+      allow update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == schoolId;
+      allow write: if isAdmin();
     }
 
     match /matches/{matchId} {
@@ -42,7 +45,8 @@ service cloud.firestore {
 
     match /matches/{matchId}/boards/{boardId} {
     	allow read: if isAuthenticated();
-      allow write: if isHomeSchool() || isAwaySchool() || isAdmin();
+      allow update: if isHomeSchool() || isAwaySchool();
+      allow write: if isAdmin();
     }
 
   }

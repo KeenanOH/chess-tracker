@@ -1,47 +1,31 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import { onAuthStateChanged } from "firebase/auth"
 
-import OnboardingView from "./views/onboarding/OnboardingView"
 import LandingView from "./views/landing/LandingView"
 import AdminView from "./views/admin/AdminView.tsx"
 import AuthView from "./components/AuthView.tsx"
 import DashboardView from "./views/dashboard/DashboardView.tsx"
-import { auth } from "./database/firebase.ts"
-import { getUser, User } from "./database/users.ts"
+import { User } from "./database/users.ts"
+import OnboardingView from "./views/onboarding/OnboardingView.tsx"
 
 export default function App() {
 
     const [user, setUser] = useState<User | null>(null)
 
-    useEffect(() => {
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                setUser(null)
-                return
-            }
-
-            const userObject = await getUser(user.uid)
-            setUser(userObject)
-        })
-    })
-
     const router = createBrowserRouter([
         {
             path: "/",
-            element: <LandingView />
-        },
-        {
-            path: "/onboarding",
-            element: <OnboardingView />
+            element: <LandingView user={ user } setUser={ setUser } />
         },
         {
             path: "/admin",
-            element:  <AuthView user={ user } element={ <AdminView /> } />
+            element:  <AuthView user={ user } setUser={ setUser } element={ <AdminView user={ user } setUser={ setUser } /> } />
         },
         {
             path: "/dashboard",
-            element: <AuthView user={ user } element={ <DashboardView user={ user } /> } />
+            element: <AuthView user={ user } setUser={ setUser } element={
+                user?.schoolId ? <DashboardView user={ user } setUser={ setUser } /> : <OnboardingView user={ user} setUser={ setUser } />
+            } />
         }
     ])
 

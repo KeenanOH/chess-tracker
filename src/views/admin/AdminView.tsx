@@ -1,4 +1,4 @@
-import { useState } from "react"
+import React, { useState } from "react"
 
 import NavigationBar from "../../components/NavigationBar.tsx"
 import ListRow from "../../components/ListRow.tsx"
@@ -6,15 +6,20 @@ import Button from "../../components/Button.tsx"
 import Footer from "../../components/Footer.tsx"
 import Calendar from "../../components/Calendar.tsx"
 import SchoolsList from "./components/SchoolsList.tsx"
+import { User } from "../../database/users.ts"
 
+interface AdminViewProps {
+    user: User | null
+    setUser: React.Dispatch<React.SetStateAction<User | null>>
+}
 
-export default function AdminView() {
+export default function AdminView({ user, setUser }: AdminViewProps) {
 
     const [date, setDate] = useState("")
 
     return (
         <div>
-            <NavigationBar isAdmin={ true } />
+            <NavigationBar user={ user } setUser={ setUser } />
             <div className="flex flex-col items-center pt-8">
                 <div className="flex flex-col py-16">
                     <Calendar setDate={ setDate } />
