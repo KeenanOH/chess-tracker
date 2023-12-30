@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react"
-import { toast } from "react-toastify"
+import React from "react"
 
 import NavigationBar from "../../components/NavigationBar.tsx"
 import Button from "../../components/Button.tsx"
 import Footer from "../../components/Footer.tsx"
 import { User } from "../../database/users.ts"
 import { getMatches, Match } from "../../database/matches.ts"
-import MatchesList from "../../components/MatchesList.tsx"
-import { getPlayers, Player } from "../../database/players.ts"
-import PlayersList from "./components/PlayersList.tsx"
+import List from "../../components/List.tsx";
+import ListRow from "../../components/ListRow.tsx";
+import {getPlayers, Player} from "../../database/players.ts";
 
 interface DashboardViewProps {
     user: User
@@ -17,59 +16,32 @@ interface DashboardViewProps {
 
 export default function DashboardView({ user, setUser }: DashboardViewProps) {
 
-    const [matches, setMatches] = useState<Match[]>([])
-    const [players, setPlayers] = useState<Player[]>([])
+    async function getMatchesFromUser(user: User) {
+        if (!user.schoolId) return []
 
-    useEffect(() => {
-        if (!user.schoolId) return
+        return await getMatches({ schoolId: user.schoolId })
+    }
 
-        console.log("Getting matches...")
-        getMatches({ schoolId: user.schoolId })
-            .then(matches => setMatches(matches))
-            .catch(error => {
-                console.log(error)
-                toast.error("Error retrieving matches")
-            })
-    }, [user])
+    async function getPlayersFromUser(user: User) {
+        if (!user.schoolId) return []
 
-    useEffect(() => {
-        if (!user.schoolId) return
+        return await getPlayers(user.schoolId)
+    }
 
-        console.log("Getting players...")
-        getPlayers(user.schoolId)
-            .then(players => setPlayers(players))
-            .catch(error => {
-                console.log(error)
-                toast.error("Error retrieving players")
-            })
-    }, [user])
+    function displayMatches(match: Match) {
+        return <ListRow key={ match.id }>{ `${match.homeSchool.name} vs ${match.awaySchool.name}` }</ListRow>
+    }
+
+    function displayPlayers(player: Player) {
+        return <ListRow key={ player.id }>{ `${player.firstName} ${player.lastName}` }</ListRow>
+    }
 
     return (
         <div>
             <NavigationBar user={ user } setUser={ setUser } />
             <div className="flex flex-col items-center">
-                <div className="w-full pt-8">
-                    <div className="mx-16 2xl:mx-96">
-                        <p className="text-3xl opacity-50 pb-5">Schedule</p>
-                        <div className="space-y-5">
-                            <MatchesList matches={ matches } />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="w-full pt-32">
-                    <div className="mx-16 2xl:mx-96">
-                        <p className="text-3xl opacity-50 pb-5">Players</p>
-                        <div className="space-y-5">
-                            <PlayersList players={ players } />
-                        </div>
-                        <div className="flex justify-center md:justify-end pt-4">
-                            <div className="w-48">
-                                <Button onClick={ () => { } }>Add Players</Button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <List className="pt-8" title="Schedule" loader={ getMatchesFromUser(user) } display={ displayMatches }/>
+                <List className="pt-32" title="Players" loader={ getPlayersFromUser(user) } display={ displayPlayers } trailingButton={ <Button onClick={ () => { } }>Add Players</Button> }/>
             </div>
 
             <Footer />

@@ -1,16 +1,25 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
 import LandingView from "./views/landing/LandingView"
 import AdminView from "./views/admin/AdminView.tsx"
 import AuthView from "./components/AuthView.tsx"
 import DashboardView from "./views/dashboard/DashboardView.tsx"
-import { User } from "./database/users.ts"
+import {getUser, User} from "./database/users.ts"
 import OnboardingView from "./views/onboarding/OnboardingView.tsx"
+import { auth } from "./database/firebase.ts"
 
 export default function App() {
 
     const [user, setUser] = useState<User | null>(null)
+    
+    useEffect(() => {
+        const currentUser = auth.currentUser
+        
+        if (currentUser)
+            getUser(currentUser.uid)
+                .then(user => setUser(user))
+    }, [])
 
     const router = createBrowserRouter([
         {
