@@ -1,7 +1,8 @@
-import React, {useState} from "react"
+import React, { useState } from "react"
 import Modal from "react-modal"
-import TextField from "../../../components/TextField.tsx";
-import Button from "../../../components/Button.tsx";
+
+import TextField from "../../../components/TextField.tsx"
+import Button from "../../../components/Button.tsx"
 
 interface OnboardingModalProps {
     isOpen: boolean

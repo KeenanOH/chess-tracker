@@ -4,7 +4,7 @@ import RCalendar from "react-calendar"
 import "./Calendar.css"
 
 interface CalendarProps {
-    setDate: React.Dispatch<React.SetStateAction<Date | undefined>>
+    setDate: React.Dispatch<React.SetStateAction<Date>>
     onChange?: (date: Date) => Promise<void>
 }
 

@@ -4,26 +4,11 @@ import Calendar from "../../../components/Calendar.tsx"
 import List from "../../../components/List.tsx"
 import { getMatches } from "../../../database/matches.ts"
 import { displayMatches } from "../../../helpers.tsx"
-
-interface MatchListSectionProps {
-    date?: Date
-}
-
-function MatchListSection({ date }: MatchListSectionProps) {
-    if (!date) return <p className="text-center pt-16">Select a date to view matches.</p>
-
-    return (
-        <List
-            title={ date.toDateString() }
-            loader={ getMatches({ date: new Date(date) }) }
-            display={ displayMatches }
-        />
-    )
-}
+import ConditionalDisplay from "../../../components/ConditionalRender.tsx"
 
 export default function ScheduleSection() {
 
-    const [date, setDate] = useState<Date>()
+    const [date, setDate] = useState<Date>(new Date(0))
 
     return (
         <div id="schedule-section" className="flex flex-col items-center pt-16">
@@ -31,7 +16,13 @@ export default function ScheduleSection() {
                 <Calendar setDate={ setDate } />
             </div>
 
-            <MatchListSection date={ date } />
+            <ConditionalDisplay bool={ date.getTime() == 0 } onFalse={ <p className="text-center pt-16">Select a date to view matches.</p> }>
+                <List
+                    title={ date.toDateString() }
+                    loader={ getMatches({ date: new Date(date) }) }
+                    display={ displayMatches }
+                />
+            </ConditionalDisplay>
         </div>
     )
 }
