@@ -5,7 +5,7 @@ import LandingView from "./views/landing/LandingView"
 import AdminView from "./views/admin/AdminView.tsx"
 import AuthView from "./components/AuthView.tsx"
 import DashboardView from "./views/dashboard/DashboardView.tsx"
-import {getUser, User} from "./database/users.ts"
+import { getUser, User } from "./database/users.ts"
 import OnboardingView from "./views/onboarding/OnboardingView.tsx"
 import { auth } from "./database/firebase.ts"
 
