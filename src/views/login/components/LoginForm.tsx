@@ -2,6 +2,7 @@ import React, { useState } from "react"
 
 import TextField from "../../../components/TextField.tsx"
 import Button from "../../../components/Button.tsx"
+import GoogleSignInButton from "../../../components/GoogleSignInButton.tsx";
 
 export interface LoginSubmit {
     email: string,
@@ -28,16 +29,16 @@ export default function LoginForm({ className, onSubmit, setShowingLoginForm }: 
             <p className="text-right text-accent">Forgot Password?</p>
             <div className="mt-8 space-y-2">
                 <Button onClick={ () => { onSubmit({ email, password }) } }>Login</Button>
+
+                <p className="text-center">--- or ---</p>
+
                 <div className="flex justify-center">
-                    <p
-                        className="text-xl text-center text-primary hover:opacity-75 active:opacity-50 cursor-pointer"
-                        onClick={ () => {
-                            setShowingLoginForm(false)
-                        } }
-                    >
-                        Register
-                    </p>
+                    <GoogleSignInButton />
                 </div>
+
+                <p className="pt-8 text-base text-center text-primary hover:opacity-75 active:opacity-50 cursor-pointer" onClick={ () => setShowingLoginForm(false) }>
+                    Don't have an account?
+                </p>
             </div>
         </div>
     )

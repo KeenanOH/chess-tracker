@@ -1,8 +1,7 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, Timestamp, query, where, or, QueryFieldFilterConstraint, and, Query } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, getDocs, query, where, or, QueryFieldFilterConstraint, and, Query } from "firebase/firestore"
 
 import { db } from "./firebase.ts"
 import { School } from "./schools.ts"
-
 
 export interface Match {
     id: string
@@ -35,12 +34,19 @@ export async function getMatches({ schoolId, date }: { schoolId?: string, date?:
     })
 }
 
-export async function createMatch(homeSchoolId: string, awaySchoolId: string, date: Date) {
-    await addDoc(collection(db, "matches"), {
-        homeSchool: doc(db, "schools", homeSchoolId),
-        awaySchool: doc(db, "schools", awaySchoolId),
-        date: Timestamp.fromDate(date)
+export async function createMatch(homeSchool: School, awaySchool: School, date: Date): Promise<Match> {
+    const documentReference = await addDoc(collection(db, "matches"), {
+        homeSchool,
+        awaySchool,
+        date: date.toISOString()
     })
+
+    return {
+        id: documentReference.id,
+        homeSchool,
+        awaySchool,
+        date: date.toISOString()
+    }
 }
 
 export async function deleteMatch(id: string) {

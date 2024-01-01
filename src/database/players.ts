@@ -1,4 +1,4 @@
-import { collection, doc, getDocs, addDoc, deleteDoc } from "firebase/firestore"
+import {collection, doc, getDocs, addDoc, deleteDoc, updateDoc} from "firebase/firestore"
 
 import { db } from "./firebase.ts"
 
@@ -17,8 +17,16 @@ export async function getPlayers(schoolId: string): Promise<Player[]> {
     })
 }
 
-export async function createPlayer(schoolId: string, firstName: string, lastName: string) {
-    await addDoc(collection(db, "schools", schoolId, "players"), {
+export async function createPlayer(schoolId: string, firstName: string, lastName: string): Promise<Player> {
+    const documentReference = await addDoc(collection(db, "schools", schoolId, "players"), {
+        firstName, lastName
+    })
+
+    return { id: documentReference.id, firstName, lastName }
+}
+
+export async function updatePlayer(schoolId: string, playerId: string, firstName: string, lastName: string) {
+    await updateDoc(doc(db, "schools", schoolId, "players", playerId), {
         firstName, lastName
     })
 }

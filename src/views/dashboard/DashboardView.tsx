@@ -1,13 +1,15 @@
-import React from "react"
+import React, {useState} from "react"
 
 import NavigationBar from "../../components/NavigationBar.tsx"
 import Button from "../../components/Button.tsx"
 import Footer from "../../components/Footer.tsx"
 import { User } from "../../database/users.ts"
-import { getMatches } from "../../database/matches.ts"
+import { getMatches, Match } from "../../database/matches.ts"
 import List from "../../components/List.tsx"
 import { getPlayersFromUser } from "../../database/helpers.ts"
-import {displayMatches, displayPlayers} from "../../helpers.tsx"
+import { displayMatch, displayPlayer } from "../../helpers.tsx"
+import PlayerModal from "./components/PlayerModal.tsx"
+import { Player } from "../../database/players.ts"
 
 interface DashboardViewProps {
     user: User
@@ -15,6 +17,22 @@ interface DashboardViewProps {
 }
 
 export default function DashboardView({ user, setUser }: DashboardViewProps) {
+
+    const matchesState = useState<Match[]>([])
+    const playersState = useState<Player[]>([])
+    const [playerModalIsOpen, setPlayerModalIsOpen] = useState(false)
+    const [playerModalInitialValue, setPlayerModalInitialValue] = useState<Player>()
+
+    function openPlayersModal(player?: Player) {
+        if (!player) {
+            setPlayerModalInitialValue(undefined)
+            setPlayerModalIsOpen(true)
+        }
+
+        setPlayerModalInitialValue(player)
+        setPlayerModalIsOpen(true)
+    }
+
     return (
         <div>
             <NavigationBar user={ user } setUser={ setUser } />
@@ -23,18 +41,29 @@ export default function DashboardView({ user, setUser }: DashboardViewProps) {
                     className="pt-8"
                     title="Schedule"
                     loader={ getMatches(user) }
-                    display={ displayMatches }
+                    display={ displayMatch }
+                    state={ matchesState }
                 />
+
                 <List
                     className="pt-32"
                     title="Players"
                     loader={ getPlayersFromUser(user) }
-                    display={ displayPlayers }
-                    trailingButton={ <Button onClick={ () => { } }>Add Players</Button> }
+                    display={ displayPlayer }
+                    trailingButton={ <Button onClick={ () => { openPlayersModal() } }>Add Players</Button> }
+                    state={ playersState }
+                    onClick={ (player) =>  openPlayersModal(player) }
                 />
             </div>
-
             <Footer />
+
+            <PlayerModal
+                isOpen={ playerModalIsOpen }
+                setIsOpen={ setPlayerModalIsOpen }
+                user={ user }
+                playersState={ playersState }
+                initialValue={ playerModalInitialValue }
+            />
         </div>
     )
 }

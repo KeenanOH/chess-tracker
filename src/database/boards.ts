@@ -1,22 +1,23 @@
-import { addDoc, collection, doc, getDocs, updateDoc, deleteDoc } from "firebase/firestore"
+import {addDoc, collection, doc, getDocs, updateDoc, deleteDoc, orderBy, query } from "firebase/firestore"
 
 import { db } from "./firebase.ts"
+import { Player } from "./players.ts"
 
 
 export interface Board {
     id: string
-    homePlayerId: string
-    awayPlayerId: string
+    homePlayer: Player
+    awayPlayer: Player
     number: number
     result: "home" | "away" | "draw" | ""
 }
 
 export async function getBoards(matchId: string): Promise<Board[]> {
-    const querySnapshot = await getDocs(collection(db, "matches", matchId, "boards"))
+    const querySnapshot = await getDocs(query(collection(db, "matches", matchId, "boards"), orderBy("number", "asc")))
 
     return querySnapshot.docs.map((doc) => {
-        const { homePlayerId, awayPlayerId, number, result } = doc.data()
-        return { id: doc.id, homePlayerId, awayPlayerId, number, result }
+        const { homePlayer, awayPlayer, number, result } = doc.data()
+        return { id: doc.id, homePlayer, awayPlayer, number, result }
     })
 }
 

@@ -34,8 +34,7 @@ service cloud.firestore {
 
     match /schools/{schoolId}/players/{playerId} {
     	allow read: if isAuthenticated();
-      allow update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == schoolId;
-      allow write: if isAdmin();
+      allow update, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == schoolId || isAdmin();
     }
 
     match /matches/{matchId} {

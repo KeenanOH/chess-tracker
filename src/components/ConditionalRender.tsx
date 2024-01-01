@@ -1,7 +1,7 @@
 import React from "react"
 
 interface ConditionalRenderProps {
-    children: React.ReactElement
+    children: React.ReactElement | React.ReactElement[]
     bool: boolean
     onFalse?: React.ReactElement | null
 }
