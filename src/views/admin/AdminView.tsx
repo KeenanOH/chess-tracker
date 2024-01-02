@@ -4,14 +4,15 @@ import { toast } from "react-toastify"
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
 import Footer from "../../components/typography/Footer.tsx"
 import Calendar from "../../components/input/Calendar.tsx"
-import { User } from "../../database/users.ts"
 import List from "../../components/layouts/List.tsx"
-import { getMatches, Match } from "../../database/matches.ts"
 import { displayMatch } from "../../helpers.tsx"
 import ConditionalRender from "../../components/layouts/ConditionalRender.tsx"
-import Button from "../../components/input/Button.tsx";
+import Button from "../../components/input/Button.tsx"
 import MatchModal from "./components/MatchModal.tsx"
-import {getSchools, School} from "../../database/schools.ts"
+import { User } from "../../database/models/user.ts"
+import { Match } from "../../database/models/match.ts"
+import { firestoreDatabase } from "../../consts.ts"
+import { School } from "../../database/models/school.ts"
 
 interface AdminViewProps {
     user: User | null
@@ -26,14 +27,14 @@ export default function AdminView({ user, setUser }: AdminViewProps) {
     const [schools, setSchools] = useState<School[]>([])
 
     function updateMatches(date: Date) {
-        getMatches({ date })
+        firestoreDatabase.getMatches({ date })
             .then(matches => setMatches(matches))
             .catch(error => toast.error((error as Error).message))
     }
 
     function openMatchModal() {
         if (schools.length < 1)
-            getSchools()
+            firestoreDatabase.getSchools()
                 .then(schools => {
                     setSchools(schools)
                 })

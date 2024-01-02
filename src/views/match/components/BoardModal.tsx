@@ -1,12 +1,13 @@
 import React, { useState } from "react"
+import { toast } from "react-toastify"
 
-import { Board, updateBoard } from "../../../database/boards.ts"
+import { Board } from "../../../database/models/board.ts"
 import Modal from "../../../components/layouts/Modal.tsx"
-import { Player } from "../../../database/players.ts"
+import { Player } from "../../../database/models/player.ts"
 import Button from "../../../components/input/Button.tsx"
 import Dropdown from "../../../components/input/Dropdown.tsx"
-import { Match } from "../../../database/matches.ts"
-import { toast } from "react-toastify"
+import { Match } from "../../../database/models/match.ts"
+import { firestoreDatabase } from "../../../consts.ts"
 
 interface BoardModalProps {
     match: Match
@@ -41,7 +42,7 @@ export default function BoardModal({ match, board, homePlayers, awayPlayers, isO
         if (!homePlayer || !awayPlayer || !result) return
         if (!["home", "away", "draw"].includes(result.toLowerCase())) return;
 
-        updateBoard(match.id, board.id, homePlayer, awayPlayer, result.toLowerCase() as "home" | "away" | "draw")
+        firestoreDatabase.updateBoard(match.id, board.id, homePlayer, awayPlayer, result.toLowerCase() as "home" | "away" | "draw")
             .then(() => {
                 setBoards(boards.map(b => {
                     if (b.id != board.id) return b

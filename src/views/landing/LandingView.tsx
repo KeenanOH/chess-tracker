@@ -5,7 +5,7 @@ import Footer from "../../components/typography/Footer.tsx"
 import HeroSection from "./components/HeroSection.tsx"
 import InfoSection from "./components/InfoSection.tsx"
 import ScheduleSection from "./components/ScheduleSection.tsx"
-import { User } from "../../database/users.ts"
+import { User } from "../../database/models/user.ts"
 
 interface LandingViewProps {
     user: User | null

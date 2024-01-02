@@ -2,10 +2,11 @@ import { useState } from "react"
 
 import Calendar from "../../../components/input/Calendar.tsx"
 import List from "../../../components/layouts/List.tsx"
-import { getMatches, Match } from "../../../database/matches.ts"
+import { Match } from "../../../database/models/match.ts"
 import { displayMatch } from "../../../helpers.tsx"
 import { toast } from "react-toastify"
-import ConditionalRender from "../../../components/layouts/ConditionalRender.tsx";
+import ConditionalRender from "../../../components/layouts/ConditionalRender.tsx"
+import { firestoreDatabase } from "../../../consts.ts"
 
 export default function ScheduleSection() {
 
@@ -13,7 +14,7 @@ export default function ScheduleSection() {
     const [date, setDate] = useState<Date>(new Date(0))
 
     function updateMatches(date: Date) {
-        getMatches({ date })
+        firestoreDatabase.getMatches({ date })
             .then(matches => setMatches(matches))
             .catch(error => toast.error((error as Error).message))
     }

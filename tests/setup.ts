@@ -1,11 +1,23 @@
-import { signInWithEmailAndPassword } from "firebase/auth"
+import * as fs from "fs"
+import { initializeTestEnvironment, RulesTestEnvironment } from "@firebase/rules-unit-testing"
+import { FirestoreDatabase } from "../src/database/firestoreDatabase"
 
-import { auth } from "../src/database/firebase"
+let testEnv: RulesTestEnvironment
+export let unauthenticatedDb : FirestoreDatabase
 
 beforeAll(async () => {
-    await signInWithEmailAndPassword(auth, process.env["email"]!, process.env["password"]!)
+    testEnv = await initializeTestEnvironment({
+        projectId: "chess-tracker-react",
+        firestore: {
+            rules: fs.readFileSync("firestore.rules", "utf8"),
+        }
+    })
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    unauthenticatedDb = new FirestoreDatabase(testEnv.unauthenticatedContext().firestore())
 })
 
 afterAll(async () => {
-    await auth.signOut()
+    await testEnv.cleanup()
 })

@@ -5,8 +5,10 @@ import { toast } from "react-toastify"
 import Modal from "../../../components/layouts/Modal.tsx"
 import Dropdown from "../../../components/input/Dropdown.tsx"
 import Button from "../../../components/input/Button.tsx"
-import { School } from "../../../database/schools.ts"
-import { createMatch, Match } from "../../../database/matches.ts"
+import { School } from "../../../database/models/school.ts"
+import { Match } from "../../../database/models/match.ts"
+import { firestoreDatabase } from "../../../consts.ts"
+
 
 interface MatchModalProps {
     isOpen: boolean
@@ -37,7 +39,7 @@ export default function MatchModal({ isOpen, setIsOpen, date, schools, matchesSt
 
         if (!homeSchool || !awaySchool) return
 
-        createMatch(homeSchool, awaySchool, date)
+        firestoreDatabase.createMatch(homeSchool, awaySchool, date)
             .then(match => {
                 setMatches(matches.concat(match))
                 setIsOpen(false)

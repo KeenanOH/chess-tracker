@@ -1,5 +1,4 @@
-import { Board } from "../../../database/boards.ts"
-
+import { Board } from "../../../database/models/board.ts"
 
 interface BoardCellProps {
     board: Board

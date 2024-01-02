@@ -4,8 +4,9 @@ import { toast } from "react-toastify"
 import Modal from "../../../components/layouts/Modal.tsx"
 import TextField from "../../../components/input/TextField.tsx"
 import Button from "../../../components/input/Button.tsx"
-import { createPlayer, Player, updatePlayer } from "../../../database/players.ts"
-import { User } from "../../../database/users.ts"
+import { Player } from "../../../database/models/player.ts"
+import { User } from "../../../database/models/user.ts"
+import { firestoreDatabase } from "../../../consts.ts"
 
 interface PlayerModalProps {
     isOpen: boolean
@@ -39,7 +40,7 @@ export default function PlayerModal({ isOpen, setIsOpen, user, playersState, ini
         if (!user.schoolId || firstName === "" || lastName === "") return
 
         if (!initialValue)
-            createPlayer(user.schoolId, firstName, lastName)
+            firestoreDatabase.createPlayer(user.schoolId, firstName, lastName)
                 .then(player => {
                     setPlayers(players.concat(player))
                     setIsOpen(false)
@@ -48,7 +49,7 @@ export default function PlayerModal({ isOpen, setIsOpen, user, playersState, ini
                 })
                 .catch(error => toast.error((error as Error).message))
         else
-            updatePlayer(user.schoolId, initialValue.id, firstName, lastName)
+            firestoreDatabase.updatePlayer(user.schoolId, initialValue.id, firstName, lastName)
                 .then(() => {
                     const newPlayersArray = players.map(player => {
                         if (player.id != initialValue.id) return player

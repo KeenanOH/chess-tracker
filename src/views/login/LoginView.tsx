@@ -2,10 +2,11 @@ import React, { useState } from "react"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { toast } from "react-toastify"
 
-import { auth } from "../../database/firebase.ts"
+import { auth } from "../../database/firebaseConsts.ts"
 import LoginForm, { LoginSubmit } from "./components/LoginForm.tsx"
 import RegistrationForm, { RegistrationSubmit } from "./components/RegistrationForm.tsx"
-import { getUser, User } from "../../database/users.ts"
+import { User } from "../../database/models/user.ts"
+import { firestoreDatabase } from "../../consts.ts"
 
 interface LoginViewProps {
     setUser: React.Dispatch<React.SetStateAction<User | null>>
@@ -18,7 +19,7 @@ export default function LoginView({ setUser }: LoginViewProps) {
     async function onLoginFormSubmit({ email, password }: LoginSubmit) {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password)
-            const user = await getUser(userCredential.user.uid)
+            const user = await firestoreDatabase.getUser(userCredential.user.uid)
             setUser(user)
         } catch (error) {
             const code = (error as Error).message

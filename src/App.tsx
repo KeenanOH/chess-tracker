@@ -5,10 +5,11 @@ import LandingView from "./views/landing/LandingView"
 import AdminView from "./views/admin/AdminView.tsx"
 import AuthView from "./components/layouts/AuthView.tsx"
 import DashboardView from "./views/dashboard/DashboardView.tsx"
-import { getUser, User } from "./database/users.ts"
+import { User } from "./database/models/user.ts"
 import OnboardingView from "./views/onboarding/OnboardingView.tsx"
-import { auth } from "./database/firebase.ts"
-import MatchView from "./views/match/MatchView.tsx";
+import { auth } from "./database/firebaseConsts.ts"
+import MatchView from "./views/match/MatchView.tsx"
+import { firestoreDatabase } from "./consts.ts"
 
 export default function App() {
 
@@ -17,7 +18,7 @@ export default function App() {
     useEffect(() => {
         const unsubscribeAuthObserver = auth.onAuthStateChanged(user => {
             if (user)
-                getUser(user.uid)
+                firestoreDatabase.getUser(user.uid)
                     .then(user => setUser(user))
             else
                 setUser(null)

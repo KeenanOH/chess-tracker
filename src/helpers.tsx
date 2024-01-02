@@ -1,6 +1,6 @@
-import { Match } from "./database/matches.ts"
+import { Match } from "./database/firestore/matches.ts"
 import ListRow from "./components/typography/ListRow.tsx"
-import { Player } from "./database/players.ts"
+import { Player } from "./database/firestore/players.ts"
 
 export function displayMatch(match: Match) {
     return (

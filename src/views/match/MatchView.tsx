@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
-import { Board, getBoards } from "../../database/boards.ts"
+import { Board } from "../../database/models/board.ts"
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
-import { User } from "../../database/users.ts"
-import { toast } from "react-toastify";
+import { User } from "../../database/models/user.ts"
+import { toast } from "react-toastify"
 import BoardCell from "./components/BoardCell.tsx"
-import { getPlayers, Player } from "../../database/players.ts"
+import { Player } from "../../database/models/player.ts"
 import BoardModal from "./components/BoardModal.tsx"
-import { getMatch, Match } from "../../database/matches.ts"
+import { Match } from "../../database/models/match.ts"
+import { firestoreDatabase } from "../../consts.ts"
 
 interface MatchViewProps {
     user: User | null
@@ -31,12 +32,12 @@ export default function MatchView({ user, setUser }: MatchViewProps) {
         const promise = async () => {
             if (!id) return
 
-            const match = await getMatch(id)
+            const match = await firestoreDatabase.getMatch(id)
             setMatch(match)
 
             if (!match) return
 
-            setBoards(await getBoards(match.id))
+            setBoards(await firestoreDatabase.getBoards(match.id))
         }
 
         promise()
@@ -51,11 +52,11 @@ export default function MatchView({ user, setUser }: MatchViewProps) {
 
         setBoard(board)
 
-        getPlayers(match.homeSchool.id)
+        firestoreDatabase.getPlayers(match.homeSchool.id)
             .then(players => setHomePlayers(players))
             .catch(error => toast.error((error as Error).message))
             .then(() => {
-                getPlayers(match.awaySchool.id)
+                firestoreDatabase.getPlayers(match.awaySchool.id)
                     .then(players => setAwayPlayers(players))
                     .catch(error => toast.error((error as Error).message))
                     .then(() => {

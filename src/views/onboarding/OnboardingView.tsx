@@ -4,8 +4,8 @@ import { toast } from "react-toastify"
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
 import ListRow from "../../components/typography/ListRow.tsx"
 import OnboardingModal from "./components/OnboardingModal.tsx"
-import { createUser, User } from "../../database/users.ts"
-
+import { User } from "../../database/models/user.ts"
+import { firestoreDatabase } from "../../consts.ts"
 
 interface OnboardingViewProps {
     user: User | null
@@ -20,7 +20,7 @@ export default function OnboardingView({ user, setUser }: OnboardingViewProps) {
         if (!user) return
 
         try {
-            await createUser(user.id, schoolAccessCode)
+            await firestoreDatabase.updateOrCreateUser(user.id, schoolAccessCode)
 
             setUser({
                 id: user.id,
