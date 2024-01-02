@@ -9,21 +9,21 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-    	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin;
+    	return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    function isHomeSchool() {
-    	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == get(/databases/$(database)/documents/matches/$(request.resource.data.match[4])).data.homeSchool[4];
+    function isHomeSchool(matchId) {
+    	return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId == get(/databases/$(database)/documents/matches/$(matchId)).data.homeSchool["id"];
     }
 
-    function isAwaySchool() {
-    	return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == get(/databases/$(database)/documents/matches/$(request.resource.data.match[4])).data.awaySchool[4];
+    function isAwaySchool(matchId) {
+    	return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId == get(/databases/$(database)/documents/matches/$(matchId)).data.awaySchool["id"];
     }
 
     match /users/{userId} {
-    	allow read: if true;
-      allow create: if request.auth.uid != null && !exists(/databases/$(database)/documents/users/$(request.auth.uid)) && request.resource.data.keys().hasAll(["schoolId", "isAdmin"]) && !request.resource.data.isAdmin;
-      allow update: if request.auth.uid != null && request.auth.uid == userId && request.resource.data.keys().hasOnly(["schoolId"]);
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow create: if isAuthenticated() && !exists(/databases/$(database)/documents/users/$(request.auth.uid)) && request.resource.data.keys().hasAll(["schoolId", "isAdmin"]) && !request.resource.data.isAdmin;
+      allow update: if isAuthenticated() && request.auth.uid == userId && request.resource.data.keys().hasOnly(["schoolId"]);
       allow write: if isAdmin();
     }
 
@@ -33,18 +33,18 @@ service cloud.firestore {
     }
 
     match /schools/{schoolId}/players/{playerId} {
-    	allow read: if isAuthenticated();
-      allow update, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.school[4] == schoolId || isAdmin();
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || (isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId == schoolId);
     }
 
     match /matches/{matchId} {
-    	allow read: if isAuthenticated();
+      allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
     match /matches/{matchId}/boards/{boardId} {
-    	allow read: if isAuthenticated();
-      allow update: if isHomeSchool() || isAwaySchool();
+      allow read: if isAuthenticated();
+      allow update: if isHomeSchool(matchId) || isAwaySchool(matchId);
       allow write: if isAdmin();
     }
 

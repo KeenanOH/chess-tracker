@@ -13,9 +13,9 @@ import {
     query,
     QueryFieldFilterConstraint,
     setDoc,
-    updateDoc,
     where,
-    writeBatch
+    writeBatch,
+    updateDoc
 } from "firebase/firestore"
 
 import { School } from "./models/school.ts"
@@ -73,7 +73,7 @@ export class FirestoreDatabase {
     }
 
     async updatePlayer(schoolId: string, playerId: string, firstName: string, lastName: string) {
-        await updateDoc(doc(this.firestore, "schools", schoolId, "players", playerId), {
+        await setDoc(doc(this.firestore, "schools", schoolId, "players", playerId), {
             firstName, lastName
         })
     }
@@ -84,10 +84,13 @@ export class FirestoreDatabase {
 
     async deletePlayers(schoolId: string) {
         const players = await this.getPlayers(schoolId)
+        const batch = writeBatch(this.firestore)
 
-        players.map(async (player) => {
-            await this.deletePlayer(schoolId, player.id)
+        players.forEach(player => {
+            batch.delete(doc(this.firestore, "schools", schoolId, "players", player.id))
         })
+
+        await batch.commit()
     }
 
     async getMatch(id: string): Promise<Match | undefined> {
@@ -155,6 +158,15 @@ export class FirestoreDatabase {
         })
     }
 
+    async createBoard(matchId: string, number: number) {
+        await addDoc(collection(this.firestore, "matches", matchId, "boards"), {
+            number: number,
+            result: "",
+            homePlayer: {},
+            awayPlayer: {}
+        })
+    }
+
     async createBoards(matchId: string) {
         const batch = writeBatch(this.firestore)
 
@@ -183,6 +195,17 @@ export class FirestoreDatabase {
         await deleteDoc(doc(this.firestore, "matches", matchId, "boards", boardId))
     }
 
+    async deleteBoards(matchId: string) {
+        const boards = await this.getBoards(matchId)
+        const batch = writeBatch(this.firestore)
+
+        boards.forEach(board => {
+            batch.delete(doc(this.firestore, "matches", matchId, "boards", board.id))
+        })
+
+        await batch.commit()
+    }
+
     async getUser(id: string): Promise<User> {
         const documentSnapshot = await getDoc(doc(this.firestore, "users", id))
         const data = documentSnapshot.data()
@@ -200,7 +223,7 @@ export class FirestoreDatabase {
     }
 
     async updateOrCreateUser(id: string, schoolId: string) {
-        await setDoc(doc(this.firestore, "users", id), {
+        return await setDoc(doc(this.firestore, "users", id), {
             schoolId: schoolId,
             isAdmin: false
         })
