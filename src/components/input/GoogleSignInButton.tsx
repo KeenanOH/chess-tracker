@@ -1,4 +1,4 @@
-import googleSignInIconUrl from "../assets/googleSignInIcon.svg"
+import googleSignInIconUrl from "../../assets/googleSignInIcon.svg"
 
 export default function GoogleSignInButton() {
     return (

@@ -1,7 +1,7 @@
 import React from "react"
 
-import LoginView from "../views/login/LoginView.tsx"
-import { User } from "../database/users.ts"
+import LoginView from "../../views/login/LoginView.tsx"
+import { User } from "../../database/users.ts"
 
 interface AuthViewProps {
     user: User | null

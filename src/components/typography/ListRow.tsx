@@ -1,7 +1,7 @@
 import React from "react"
 import { Link } from "react-router-dom"
 
-import rightWardArrowUrl from "../assets/right-arrow.svg"
+import rightWardArrowUrl from "../../assets/right-arrow.svg"
 
 
 interface ListRowProps<T> {

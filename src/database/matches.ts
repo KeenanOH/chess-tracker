@@ -1,13 +1,38 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, query, where, or, QueryFieldFilterConstraint, and, Query } from "firebase/firestore"
+import {
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    query,
+    where,
+    or,
+    QueryFieldFilterConstraint,
+    and,
+    Query,
+    getDoc
+} from "firebase/firestore"
 
 import { db } from "./firebase.ts"
 import { School } from "./schools.ts"
+import {createBoards} from "./boards.ts";
 
 export interface Match {
     id: string
     homeSchool: School
     awaySchool: School
     date: string
+}
+
+export async function getMatch(id: string): Promise<Match | undefined> {
+    const document = await getDoc(doc(db, "matches", id))
+    const data = document.data()
+
+    if (!data) return
+    const { homeSchool, awaySchool, date } = data
+    return {
+        id: document.id, homeSchool, awaySchool, date
+    }
 }
 
 export async function getMatches({ schoolId, date }: { schoolId?: string, date?: Date }): Promise<Match[]> {
@@ -40,6 +65,8 @@ export async function createMatch(homeSchool: School, awaySchool: School, date: 
         awaySchool,
         date: date.toISOString()
     })
+
+    await createBoards(documentReference.id)
 
     return {
         id: documentReference.id,

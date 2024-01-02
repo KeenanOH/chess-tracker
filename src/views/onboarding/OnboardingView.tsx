@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import { toast } from "react-toastify"
 
-import NavigationBar from "../../components/NavigationBar.tsx"
-import ListRow from "../../components/ListRow.tsx"
+import NavigationBar from "../../components/layouts/NavigationBar.tsx"
+import ListRow from "../../components/typography/ListRow.tsx"
 import OnboardingModal from "./components/OnboardingModal.tsx"
 import { createUser, User } from "../../database/users.ts"
 

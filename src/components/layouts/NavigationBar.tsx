@@ -1,8 +1,8 @@
 import React from "react"
 import { Link } from "react-router-dom"
 
-import { auth } from "../database/firebase.ts"
-import { User } from "../database/users.ts"
+import { auth } from "../../database/firebase.ts"
+import { User } from "../../database/users.ts"
 
 interface NavigationBarProps {
     user: User | null

@@ -1,15 +1,15 @@
 import React, { useState } from "react"
 import { toast } from "react-toastify"
 
-import NavigationBar from "../../components/NavigationBar.tsx"
-import Footer from "../../components/Footer.tsx"
-import Calendar from "../../components/Calendar.tsx"
+import NavigationBar from "../../components/layouts/NavigationBar.tsx"
+import Footer from "../../components/typography/Footer.tsx"
+import Calendar from "../../components/input/Calendar.tsx"
 import { User } from "../../database/users.ts"
-import List from "../../components/List.tsx"
+import List from "../../components/layouts/List.tsx"
 import { getMatches, Match } from "../../database/matches.ts"
 import { displayMatch } from "../../helpers.tsx"
-import ConditionalRender from "../../components/ConditionalRender.tsx"
-import Button from "../../components/Button.tsx";
+import ConditionalRender from "../../components/layouts/ConditionalRender.tsx"
+import Button from "../../components/input/Button.tsx";
 import MatchModal from "./components/MatchModal.tsx"
 import {getSchools, School} from "../../database/schools.ts"
 

@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 
-import TextField from "../../../components/TextField.tsx"
-import Button from "../../../components/Button.tsx"
-import GoogleSignInButton from "../../../components/GoogleSignInButton.tsx";
+import TextField from "../../../components/input/TextField.tsx"
+import Button from "../../../components/input/Button.tsx"
+import GoogleSignInButton from "../../../components/input/GoogleSignInButton.tsx";
 
 export interface LoginSubmit {
     email: string,

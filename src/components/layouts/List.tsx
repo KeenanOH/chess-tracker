@@ -1,8 +1,9 @@
 import React, { useEffect } from "react"
 import { toast } from "react-toastify"
 
-import Button from "./Button.tsx"
+import Button from "../input/Button.tsx"
 import ConditionalRender from "./ConditionalRender.tsx"
+import Title from "../typography/Title.tsx"
 
 interface ListProps<T> {
     title: string
@@ -30,7 +31,7 @@ export default function List<T>({ title, loader, display, className, state, trai
     return (
         <div className={ "w-full " + (className ? className : "" )}>
             <div className="flex flex-col space-y-5 mx-16 2xl:mx-96">
-                <p className="text-3xl opacity-50">{ title }</p>
+                <Title>{ title }</Title>
                 <ConditionalRender bool={ loaderData.length > 0 } onFalse={ onEmpty }>
                     { loaderData.map(data => display(data, onClick)) }
                 </ConditionalRender>

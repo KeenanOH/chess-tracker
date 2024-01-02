@@ -1,8 +1,6 @@
 import { Match } from "./database/matches.ts"
-import ListRow from "./components/ListRow.tsx"
+import ListRow from "./components/typography/ListRow.tsx"
 import { Player } from "./database/players.ts"
-import BoardCell from "./views/match/components/BoardCell.tsx"
-import { Board } from "./database/boards.ts"
 
 export function displayMatch(match: Match) {
     return (
@@ -27,8 +25,4 @@ export function displayPlayer(player: Player, onClick?: (player: Player) => void
             { `${player.firstName} ${player.lastName}` }
         </ListRow>
     )
-}
-
-export function displayBoard(board: Board) {
-    return <BoardCell key={ board.id } board={ board } />
 }

@@ -1,11 +1,11 @@
 import { useState } from "react"
 
-import Calendar from "../../../components/Calendar.tsx"
-import List from "../../../components/List.tsx"
+import Calendar from "../../../components/input/Calendar.tsx"
+import List from "../../../components/layouts/List.tsx"
 import { getMatches, Match } from "../../../database/matches.ts"
 import { displayMatch } from "../../../helpers.tsx"
 import { toast } from "react-toastify"
-import ConditionalRender from "../../../components/ConditionalRender.tsx";
+import ConditionalRender from "../../../components/layouts/ConditionalRender.tsx";
 
 export default function ScheduleSection() {
 

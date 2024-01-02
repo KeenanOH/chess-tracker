@@ -2,9 +2,9 @@ import React, { useState } from "react"
 import { toast } from "react-toastify"
 
 
-import Modal from "../../../components/Modal.tsx"
-import Dropdown from "../../../components/Dropdown.tsx"
-import Button from "../../../components/Button.tsx"
+import Modal from "../../../components/layouts/Modal.tsx"
+import Dropdown from "../../../components/input/Dropdown.tsx"
+import Button from "../../../components/input/Button.tsx"
 import { School } from "../../../database/schools.ts"
 import { createMatch, Match } from "../../../database/matches.ts"
 

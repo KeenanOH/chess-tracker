@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
 import LandingView from "./views/landing/LandingView"
 import AdminView from "./views/admin/AdminView.tsx"
-import AuthView from "./components/AuthView.tsx"
+import AuthView from "./components/layouts/AuthView.tsx"
 import DashboardView from "./views/dashboard/DashboardView.tsx"
 import { getUser, User } from "./database/users.ts"
 import OnboardingView from "./views/onboarding/OnboardingView.tsx"
