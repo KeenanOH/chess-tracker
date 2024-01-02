@@ -1,7 +1,7 @@
 import React from "react"
 
 import LoginView from "../../views/login/LoginView.tsx"
-import { User } from "../../database/firestore/users.ts"
+import { User } from "../../database/models/user.ts";
 
 interface AuthViewProps {
     user: User | null

@@ -2,7 +2,7 @@ import React from "react"
 import { Link } from "react-router-dom"
 
 import { auth } from "../../database/firebaseConsts.ts"
-import { User } from "../../database/firestore/users.ts"
+import { User } from "../../database/models/user.ts"
 
 interface NavigationBarProps {
     user: User | null
