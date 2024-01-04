@@ -119,7 +119,9 @@ function EditableListRow({ children, editing, onChange, onClick }: { children: s
     return (
         <div className="flex">
             <ConditionalRender bool={ editing }>
-                <input className="mr-8 scale-125 accent-primary" type="checkbox" onChange={ () => { onChange() } } />
+                <div className="flex justify-center">
+                    <input className="mr-8 scale-125 accent-primary" type="checkbox" onChange={ () => { onChange() } } />
+                </div>
             </ConditionalRender>
 
             <div
