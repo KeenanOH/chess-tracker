@@ -117,7 +117,7 @@ export default function EditableList<T extends Selectable>({ className = "", tit
 
 function EditableListRow({ children, editing, onChange, onClick }: { children: string, editing: boolean, onChange: () => void, onClick?: () => void }) {
     return (
-        <div className="flex justify-center">
+        <div className="flex items-center justify-center">
             <ConditionalRender bool={ editing }>
                 <input className="mr-8 scale-125 accent-primary" type="checkbox" onChange={ () => { onChange() } } />
             </ConditionalRender>
