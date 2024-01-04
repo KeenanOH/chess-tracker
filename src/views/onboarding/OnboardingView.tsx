@@ -1,23 +1,19 @@
-import React, { useState } from "react"
+import { useState, useContext } from "react"
 import { toast } from "react-toastify"
 
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
-import ListRow from "../../components/typography/ListRow.tsx"
+import { ListRow } from "../../components/layouts/List.tsx"
 import OnboardingModal from "./components/OnboardingModal.tsx"
-import { User } from "../../database/models/user.ts"
 import { firestoreDatabase } from "../../consts.ts"
+import { AuthContext } from "../../context/AuthContext.ts"
 
-interface OnboardingViewProps {
-    user: User | null
-    setUser: React.Dispatch<React.SetStateAction<User | null>>
-}
+export default function OnboardingView() {
 
-export default function OnboardingView({ user, setUser }: OnboardingViewProps) {
-
+    const { user, setUser } = useContext(AuthContext)
     const [modalPresented, setModalPresented] = useState(false)
     
     async function handleSchoolAccessCodeSubmit(schoolAccessCode: string) {
-        if (!user) return
+        if (!user.id) return
 
         try {
             await firestoreDatabase.updateOrCreateUser(user.id, schoolAccessCode)
@@ -35,15 +31,10 @@ export default function OnboardingView({ user, setUser }: OnboardingViewProps) {
 
     return (
         <div>
-            <NavigationBar user={ user } setUser={ setUser } />
+            <NavigationBar />
             <div className="mx-8 mt-6">
                 <p className="text-3xl opacity-50 mb-4">Welcome, Coach!</p>
-                <ListRow
-                    className="hover:opacity-75 active:opacity-50 cursor-pointer"
-                    onClick={ () => {
-                        setModalPresented(true)
-                    } }
-                >
+                <ListRow onClick={ () => setModalPresented(true) }>
                     Click here to complete the onboarding process!
                 </ListRow>
             </div>

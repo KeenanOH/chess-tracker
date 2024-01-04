@@ -5,23 +5,27 @@ import LandingView from "./views/landing/LandingView"
 import AdminView from "./views/admin/AdminView.tsx"
 import AuthView from "./components/layouts/AuthView.tsx"
 import DashboardView from "./views/dashboard/DashboardView.tsx"
-import { User } from "./database/models/user.ts"
 import OnboardingView from "./views/onboarding/OnboardingView.tsx"
 import { auth } from "./database/firebaseConsts.ts"
 import MatchView from "./views/match/MatchView.tsx"
 import { firestoreDatabase } from "./consts.ts"
+import { AuthContext } from "./context/AuthContext.ts"
+import LoginView from "./views/login/LoginView.tsx"
+import { User } from "./database/models/user.ts"
 
 export default function App() {
 
-    const [user, setUser] = useState<User | null>(null)
-    
+    const [user, setUser] = useState<User>({ })
+
     useEffect(() => {
         const unsubscribeAuthObserver = auth.onAuthStateChanged(user => {
             if (user)
                 firestoreDatabase.getUser(user.uid)
-                    .then(user => setUser(user))
+                    .then(user => {
+                        setUser(user)
+                    })
             else
-                setUser(null)
+                setUser({ })
 
             unsubscribeAuthObserver()
         })
@@ -30,27 +34,32 @@ export default function App() {
     const router = createBrowserRouter([
         {
             path: "/",
-            element: <LandingView user={ user } setUser={ setUser } />
+            element: <LandingView />
         },
         {
             path: "/admin",
-            element:  <AuthView user={ user } setUser={ setUser } element={ <AdminView user={ user } setUser={ setUser } /> } />
+            element: <AuthView element={ <AdminView />} />
         },
         {
             path: "/dashboard",
-            element: <AuthView user={ user } setUser={ setUser } element={
-                user?.schoolId ? <DashboardView user={ user } setUser={ setUser } /> : <OnboardingView user={ user} setUser={ setUser } />
-            } />
+            element: <AuthView element={ user.schoolId ? <DashboardView /> : <OnboardingView /> } />
         },
         {
             path: "/matches/:id",
-            element: <MatchView user={ user } setUser={ setUser } />
+            element: <AuthView element={ <MatchView />} />
+        },
+        {
+            path: "/login",
+            element: <LoginView />
         }
     ])
 
     return (
-        <div className="font-montserrat">
-            <RouterProvider router={ router } />
-        </div>
+        <AuthContext.Provider value={ { user, setUser } }>
+            <div className="font-montserrat">
+                <RouterProvider router={ router } />
+            </div>
+        </AuthContext.Provider>
+
     )
 }

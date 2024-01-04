@@ -6,3 +6,7 @@ export interface Match {
     awaySchool: School
     date: string
 }
+
+export interface SelectableMatch extends Match {
+    selected: boolean
+}

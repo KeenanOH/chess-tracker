@@ -12,7 +12,8 @@ export default {
       primary: "#77909B",
       secondary: "#A7BCC5",
       accent: "#8BACBA",
-      transparent: "transparent"
+      transparent: "transparent",
+      red: "#D30000"
     },
     fontFamily: {
       montserrat: ['Montserrat', 'sans-serif'],

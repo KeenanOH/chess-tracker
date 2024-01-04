@@ -1,29 +1,58 @@
-import React, { useState } from "react"
+import {useContext, useEffect, useState} from "react"
+import { toast } from "react-toastify"
 
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
-import Button from "../../components/input/Button.tsx"
+// import Button from "../../components/input/Button.tsx"
 import Footer from "../../components/typography/Footer.tsx"
-import { User } from "../../database/models/user.ts"
-import { Match } from "../../database/models/match.ts"
+import { SelectableMatch } from "../../database/models/match.ts"
 import List from "../../components/layouts/List.tsx"
-import { displayMatch, displayPlayer } from "../../helpers.tsx"
 import PlayerModal from "./components/PlayerModal.tsx"
-import { Player } from "../../database/models/player.ts"
+import { SelectablePlayer } from "../../database/models/player.ts"
 import { firestoreDatabase } from "../../consts.ts"
+import { AuthContext } from "../../context/AuthContext.ts"
+import EditableList from "../../components/layouts/EditableList.tsx";
+import Button from "../../components/input/Button.tsx";
 
-interface DashboardViewProps {
-    user: User
-    setUser: React.Dispatch<React.SetStateAction<User | null>>
-}
 
-export default function DashboardView({ user, setUser }: DashboardViewProps) {
+export default function DashboardView() {
 
-    const matchesState = useState<Match[]>([])
-    const playersState = useState<Player[]>([])
+    const { user } = useContext(AuthContext)
+    const [matches, setMatches] = useState<SelectableMatch[]>([])
+    const [players, setPlayers] = useState<SelectablePlayer[]>([])
     const [playerModalIsOpen, setPlayerModalIsOpen] = useState(false)
-    const [playerModalInitialValue, setPlayerModalInitialValue] = useState<Player>()
+    const [playerModalInitialValue, setPlayerModalInitialValue] = useState<SelectablePlayer>()
 
-    function openPlayersModal(player?: Player) {
+    useEffect(() => {
+        if (!user.schoolId) return
+
+        firestoreDatabase.getPlayers(user.schoolId)
+            .then(players => {
+                setPlayers(players.map(player => {
+                    return {
+                        id: player.id,
+                        firstName: player.firstName,
+                        lastName: player.lastName,
+                        selected: false
+                    }
+                }))
+            })
+
+        firestoreDatabase.getMatches({ schoolId: user.schoolId })
+            .then(matches => {
+                setMatches(matches.map(match => {
+                    return {
+                        id: match.id,
+                        homeSchool: match.homeSchool,
+                        awaySchool: match.awaySchool,
+                        date: match.date,
+                        selected: false
+
+                    }
+                }))
+            })
+    }, []);
+
+    function openPlayersModal(player?: SelectablePlayer) {
         if (!player) {
             setPlayerModalInitialValue(undefined)
             setPlayerModalIsOpen(true)
@@ -33,31 +62,41 @@ export default function DashboardView({ user, setUser }: DashboardViewProps) {
         setPlayerModalIsOpen(true)
     }
 
+    function handlePlayersDelete(players: SelectablePlayer[]) {
+        if (!user.schoolId) return
+
+        firestoreDatabase.deletePlayers(user.schoolId, players)
+            .then(() => {
+                setPlayers(allPlayers => {
+                    return allPlayers.filter(player => !players.includes(player))
+                })
+
+                toast.success("Deleted selected player(s)")
+            })
+            .catch(error => toast.error((error as Error).message))
+    }
+
     return (
         <div>
-            <NavigationBar user={ user } setUser={ setUser } />
+            <NavigationBar />
             <div className="flex flex-col items-center">
                 <List
                     className="pt-8"
-                    title="Schedule"
-                    loader={ firestoreDatabase.getMatches(user) }
-                    display={ displayMatch }
-                    state={ matchesState }
+                    title="Matches"
+                    state={ [matches, setMatches] }
+                    display={ match => `${match.homeSchool.name} vs. ${match.awaySchool.name} - ${new Date(match.date).toDateString()}` }
+                    onEmpty="No matches to display."
                 />
 
-                <List
-                    className="pt-32"
+                <EditableList
+                    className="pt-16"
                     title="Players"
-                    loader={
-                        (async () => {
-                            if (!user.schoolId) return []
-                            return await firestoreDatabase.getPlayers(user.schoolId)
-                        })()
-                    }
-                    display={ displayPlayer }
-                    trailingButton={ <Button onClick={ () => { openPlayersModal() } }>Add Players</Button> }
-                    state={ playersState }
-                    onClick={ (player) =>  openPlayersModal(player) }
+                    state={ [players, setPlayers] }
+                    display={ player => `${player.firstName} ${player.lastName}` }
+                    actions={ [{ name: "Delete", destructive: true, callback: handlePlayersDelete }] }
+                    onEmpty="No players to display."
+                    onClick={ openPlayersModal }
+                    trailingButton={ <Button onClick={ openPlayersModal }>Add Player</Button> }
                 />
             </div>
             <Footer />
@@ -65,8 +104,8 @@ export default function DashboardView({ user, setUser }: DashboardViewProps) {
             <PlayerModal
                 isOpen={ playerModalIsOpen }
                 setIsOpen={ setPlayerModalIsOpen }
-                user={ user }
-                playersState={ playersState }
+                user={ user! }
+                playersState={ [players, setPlayers] }
                 initialValue={ playerModalInitialValue }
             />
         </div>

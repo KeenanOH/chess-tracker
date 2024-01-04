@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
 import { Board } from "../../database/models/board.ts"
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
-import { User } from "../../database/models/user.ts"
 import { toast } from "react-toastify"
 import BoardCell from "./components/BoardCell.tsx"
 import { Player } from "../../database/models/player.ts"
@@ -11,12 +10,7 @@ import BoardModal from "./components/BoardModal.tsx"
 import { Match } from "../../database/models/match.ts"
 import { firestoreDatabase } from "../../consts.ts"
 
-interface MatchViewProps {
-    user: User | null
-    setUser: React.Dispatch<React.SetStateAction<User | null>>
-}
-
-export default function MatchView({ user, setUser }: MatchViewProps) {
+export default function MatchView() {
     
     // const location = useLocation()
     const { id } = useParams()
@@ -75,7 +69,7 @@ export default function MatchView({ user, setUser }: MatchViewProps) {
 
     return (
         <div>
-            <NavigationBar user={ user } setUser={ setUser } />
+            <NavigationBar />
 
             <div className="grid grid-cols-1 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 pt-16">
                 {

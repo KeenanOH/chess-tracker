@@ -1,19 +1,18 @@
-import React, { useState } from "react"
+import { useContext, useState } from "react"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
 
 import { auth } from "../../database/firebaseConsts.ts"
 import LoginForm, { LoginSubmit } from "./components/LoginForm.tsx"
 import RegistrationForm, { RegistrationSubmit } from "./components/RegistrationForm.tsx"
-import { User } from "../../database/models/user.ts"
 import { firestoreDatabase } from "../../consts.ts"
+import {AuthContext} from "../../context/AuthContext.ts";
 
-interface LoginViewProps {
-    setUser: React.Dispatch<React.SetStateAction<User | null>>
-}
+export default function LoginView() {
 
-export default function LoginView({ setUser }: LoginViewProps) {
-
+    const { setUser } = useContext(AuthContext)
+    const navigate = useNavigate()
     const [showingLoginForm, setShowingLoginForm] = useState(true)
 
     async function onLoginFormSubmit({ email, password }: LoginSubmit) {
@@ -21,6 +20,7 @@ export default function LoginView({ setUser }: LoginViewProps) {
             const userCredential = await signInWithEmailAndPassword(auth, email, password)
             const user = await firestoreDatabase.getUser(userCredential.user.uid)
             setUser(user)
+            navigate("/dashboard")
         } catch (error) {
             const code = (error as Error).message
 

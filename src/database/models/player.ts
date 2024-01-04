@@ -4,3 +4,7 @@ export interface Player {
     firstName: string
     lastName: string
 }
+
+export interface SelectablePlayer extends Player {
+    selected: boolean
+}

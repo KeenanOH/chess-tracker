@@ -1,16 +1,16 @@
-import React from "react"
+import React, { useContext } from "react"
 
-import LoginView from "../../views/login/LoginView.tsx"
-import { User } from "../../database/models/user.ts";
+import { AuthContext } from "../../context/AuthContext.ts"
+import { Navigate } from "react-router-dom"
 
 interface AuthViewProps {
-    user: User | null
-    setUser: React.Dispatch<React.SetStateAction<User | null>>
     element: React.ReactElement
 }
 
-export default function AuthView({ user, setUser, element }: AuthViewProps) {
-    if (user) return element
+export default function AuthView({ element }: AuthViewProps) {
+    const { user } = useContext(AuthContext)
 
-    return <LoginView setUser={ setUser } />
+    if (user.id) return element
+
+    return <Navigate to="/login" replace={ true } />
 }

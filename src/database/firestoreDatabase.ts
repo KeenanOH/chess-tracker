@@ -24,7 +24,6 @@ import { Match } from "./models/match.ts"
 import { Board } from "./models/board.ts"
 import { User } from "./models/user.ts"
 
-
 export class FirestoreDatabase {
 
     firestore: Firestore
@@ -82,8 +81,10 @@ export class FirestoreDatabase {
         await deleteDoc(doc(this.firestore, "schools", schoolId, "players", playerId))
     }
 
-    async deletePlayers(schoolId: string) {
-        const players = await this.getPlayers(schoolId)
+    async deletePlayers(schoolId: string, players?: Player[]) {
+        if (!players)
+            players = await this.getPlayers(schoolId)
+
         const batch = writeBatch(this.firestore)
 
         players.forEach(player => {

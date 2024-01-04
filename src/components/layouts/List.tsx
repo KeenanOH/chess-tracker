@@ -1,47 +1,70 @@
-import React, { useEffect } from "react"
-import { toast } from "react-toastify"
+import React from "react"
 
-import Button from "../input/Button.tsx"
-import ConditionalRender from "./ConditionalRender.tsx"
+import { Identifiable } from "../../types.ts"
+import rightWardArrowUrl from "../../assets/right-arrow.svg"
 import Title from "../typography/Title.tsx"
+import Button from "../input/Button.tsx";
+import ConditionalRender from "./ConditionalRender.tsx";
 
 interface ListProps<T> {
-    title: string
-    loader?: Promise<T[]>
-    display: (type: T, onClick?: (t: T) => void) => React.ReactElement
-    state: [T[], React.Dispatch<React.SetStateAction<T[]>>]
     className?: string
+    title: string
+    state: [T[], React.Dispatch<React.SetStateAction<T[]>>]
+    display: (data: T) => string
+    onEmpty: string
+    onClick?: (data: T) => void
     trailingButton?: React.ReactElement<typeof Button>
-    onClick?: (t: T) => void
-    onEmpty?: React.ReactElement
 }
 
-export default function List<T>({ title, loader, display, className, state, trailingButton, onClick, onEmpty }: ListProps<T>) {
+export default function List<T extends Identifiable>({ className = "", title, state, display, onEmpty, onClick, trailingButton }: ListProps<T>) {
 
-    const [loaderData, setLoaderData] = state
+    const [data] = state
 
-    useEffect(() => {
-        if (!loader) return
-
-        loader
-            .then(data => setLoaderData(data))
-            .catch(error => toast.error((error as Error).message))
-    }, [])
+    function handleClick(data: T) {
+        if (onClick)
+            onClick(data)
+    }
 
     return (
-        <div className={ "w-full " + (className ? className : "" )}>
-            <div className="flex flex-col space-y-5 mx-16 2xl:mx-96">
+        <div className={ "w-full " + className }>
+            <div className="mx-16 2xl:mx-96">
                 <Title>{ title }</Title>
-                <ConditionalRender bool={ loaderData.length > 0 } onFalse={ onEmpty }>
-                    { loaderData.map(data => display(data, onClick)) }
+
+                <ConditionalRender bool={ data.length > 0} onFalse={ <p className="text-center py-16">{ onEmpty }</p> }>
+                    <div className="space-y-5">
+                        {
+                            data.map(data => {
+                                return (
+                                    <ListRow
+                                        key={ data.id }
+                                        onClick={ () => { handleClick(data) } }
+                                    >
+                                        { display(data) }
+                                    </ListRow>
+                                )
+                            })
+                        }
+                    </div>
                 </ConditionalRender>
+
                 <ConditionalRender bool={ !!trailingButton }>
-                    <div className={ "flex justify-center pt-4 " + (loaderData.length > 0 ? "md:justify-end" : "") }>
+                    <div className={ "flex justify-center pt-4 " + (data.length > 0 ? "md:justify-end" : "") }>
                         <div className="w-48">
                             { trailingButton }
                         </div>
                     </div>
                 </ConditionalRender>
+            </div>
+        </div>
+    )
+}
+
+export function ListRow({ children, onClick }: { children: string, onClick?: () => void }) {
+    return (
+        <div className="flex" onClick={ onClick }>
+            <div className="flex w-full text-xl py-3 shadow-lg rounded-xl transition ease-in-out hover:scale-105 active:scale-110">
+                <p className="ml-6">{children}</p>
+                <img className="ml-auto mr-5" src={ rightWardArrowUrl } alt="link-arrow" />
             </div>
         </div>
     )

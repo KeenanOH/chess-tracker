@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 import Modal from "../../../components/layouts/Modal.tsx"
 import TextField from "../../../components/input/TextField.tsx"
 import Button from "../../../components/input/Button.tsx"
-import { Player } from "../../../database/models/player.ts"
+import { SelectablePlayer } from "../../../database/models/player.ts"
 import { User } from "../../../database/models/user.ts"
 import { firestoreDatabase } from "../../../consts.ts"
 
@@ -12,8 +12,8 @@ interface PlayerModalProps {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     user: User
-    playersState: [Player[], React.Dispatch<React.SetStateAction<Player[]>>]
-    initialValue?: Player
+    playersState: [SelectablePlayer[], React.Dispatch<React.SetStateAction<SelectablePlayer[]>>]
+    initialValue?: SelectablePlayer
 }
 
 export default function PlayerModal({ isOpen, setIsOpen, user, playersState, initialValue }: PlayerModalProps) {
@@ -42,7 +42,7 @@ export default function PlayerModal({ isOpen, setIsOpen, user, playersState, ini
         if (!initialValue)
             firestoreDatabase.createPlayer(user.schoolId, firstName, lastName)
                 .then(player => {
-                    setPlayers(players.concat(player))
+                    setPlayers(players.concat({ id: player.id, firstName, lastName, selected: false }))
                     setIsOpen(false)
 
                     toast.success("Player has been created.")
@@ -53,7 +53,7 @@ export default function PlayerModal({ isOpen, setIsOpen, user, playersState, ini
                 .then(() => {
                     const newPlayersArray = players.map(player => {
                         if (player.id != initialValue.id) return player
-                        return { id: player.id, firstName, lastName }
+                        return { id: player.id, firstName, lastName, selected: player.selected }
                     })
                     setPlayers(newPlayersArray)
                     setIsOpen(false)
@@ -69,7 +69,7 @@ export default function PlayerModal({ isOpen, setIsOpen, user, playersState, ini
                 <TextField placeholder="First Name" value={ firstName } onChange={ setFirstName } />
                 <TextField placeholder="Last Name" value={ lastName } onChange={ setLastName } />
 
-                <Button type="submit">{ initialValue ? "Update" : "Add"}</Button>
+                <Button type="submit">{ initialValue ? "Update" : "Add" }</Button>
             </form>
         </Modal>
     )

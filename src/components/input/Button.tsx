@@ -12,7 +12,7 @@ export default function Button({ children, className, type = "button", onClick }
         <button
             className={ "rounded-xl text-xl bg-primary text-background py-2 w-full hover:opacity-75 active:opacity-50" + (className ? className : "") }
             type={ type }
-            onClick={ onClick }
+            onClick={ () => onClick ? onClick() : {} }
         >
             { children }
         </button>

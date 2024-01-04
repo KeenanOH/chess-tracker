@@ -3,7 +3,6 @@ import { useState } from "react"
 import Calendar from "../../../components/input/Calendar.tsx"
 import List from "../../../components/layouts/List.tsx"
 import { Match } from "../../../database/models/match.ts"
-import { displayMatch } from "../../../helpers.tsx"
 import { toast } from "react-toastify"
 import ConditionalRender from "../../../components/layouts/ConditionalRender.tsx"
 import { firestoreDatabase } from "../../../consts.ts"
@@ -28,9 +27,9 @@ export default function ScheduleSection() {
             <ConditionalRender bool={ date.getTime() != 0 } onFalse={ <p className="text-center py-16">Select a date to view matches.</p> }>
                 <List
                     title={ date.toDateString() }
-                    display={ displayMatch }
+                    display={ match => `${match.homeSchool.name} vs. ${match.awaySchool.name} - ${new Date(match.date).toDateString()}` }
                     state={ [matches, setMatches] }
-                    onEmpty={ <p className="text-center py-16">No matches found.</p> }
+                    onEmpty="No matches found."
                 />
             </ConditionalRender>
         </div>
