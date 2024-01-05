@@ -6,16 +6,26 @@ import AdminView from "./views/admin/AdminView.tsx"
 import AuthView from "./components/layouts/AuthView.tsx"
 import DashboardView from "./views/dashboard/DashboardView.tsx"
 import OnboardingView from "./views/onboarding/OnboardingView.tsx"
-import { auth } from "./database/firebaseConsts.ts"
+import {auth, database, firestore} from "./database/firebaseConsts.ts"
 import MatchView from "./views/match/MatchView.tsx"
-import { firestoreDatabase } from "./consts.ts"
 import { AuthContext } from "./context/AuthContext.ts"
 import LoginView from "./views/login/LoginView.tsx"
-import { User } from "./database/models/user.ts"
+import { User } from "./database/models/firestore/user.ts"
+import { FirestoreDatabaseContext } from "./context/FirestoreDatabaseContext.ts"
+import { FirestoreDatabase } from "./database/firestoreDatabase.ts"
+import { RealtimeDatabaseContext } from "./context/RealtimeDatabaseContext.ts"
+import { RealtimeDatabase } from "./database/realtimeDatabase.ts"
+import AdminMatchView from "./views/match/AdminMatchView.tsx"
+import { Match } from "./database/models/firestore/match.ts"
+import {MatchContext} from "./context/MatchContext.ts";
+import ResultsView from "./views/results/ResultsView.tsx";
 
 export default function App() {
 
     const [user, setUser] = useState<User>({ })
+    const [match, setMatch] = useState<Match>()
+    const firestoreDatabase = new FirestoreDatabase(firestore)
+    const realtimeDatabase = new RealtimeDatabase(database)
 
     useEffect(() => {
         const unsubscribeAuthObserver = auth.onAuthStateChanged(user => {
@@ -38,7 +48,7 @@ export default function App() {
         },
         {
             path: "/admin",
-            element: <AuthView element={ <AdminView />} />
+            element: <AuthView element={ <AdminView /> } />
         },
         {
             path: "/dashboard",
@@ -51,14 +61,28 @@ export default function App() {
         {
             path: "/login",
             element: <LoginView />
+        },
+        {
+            path: "/admin/matches/:id",
+            element: <AdminMatchView />
+        },
+        {
+            path: "/results/:id",
+            element: <ResultsView />
         }
     ])
 
     return (
         <AuthContext.Provider value={ { user, setUser } }>
-            <div className="font-montserrat">
-                <RouterProvider router={ router } />
-            </div>
+            <FirestoreDatabaseContext.Provider value={ firestoreDatabase }>
+                <RealtimeDatabaseContext.Provider value={ realtimeDatabase }>
+                    <MatchContext.Provider value={ { match, setMatch} }>
+                        <div className="font-montserrat">
+                            <RouterProvider router={ router } />
+                        </div>
+                    </MatchContext.Provider>
+                </RealtimeDatabaseContext.Provider>
+            </FirestoreDatabaseContext.Provider>
         </AuthContext.Provider>
 
     )

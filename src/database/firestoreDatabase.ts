@@ -18,11 +18,11 @@ import {
     updateDoc
 } from "firebase/firestore"
 
-import { School } from "./models/school.ts"
-import { Player } from "./models/player.ts"
-import { Match } from "./models/match.ts"
-import { Board } from "./models/board.ts"
-import { User } from "./models/user.ts"
+import { School } from "./models/firestore/school.ts"
+import { Player } from "./models/firestore/player.ts"
+import { Match } from "./models/firestore/match.ts"
+import { Board } from "./models/firestore/board.ts"
+import { User } from "./models/firestore/user.ts"
 
 export class FirestoreDatabase {
 

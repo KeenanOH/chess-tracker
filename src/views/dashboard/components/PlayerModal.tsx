@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
 import Modal from "../../../components/layouts/Modal.tsx"
 import TextField from "../../../components/input/TextField.tsx"
-import Button from "../../../components/input/Button.tsx"
-import { SelectablePlayer } from "../../../database/models/player.ts"
-import { User } from "../../../database/models/user.ts"
-import { firestoreDatabase } from "../../../consts.ts"
+import Button from "../../../components/buttons/Button.tsx"
+import { Player } from "../../../database/models/firestore/player.ts"
+import { User } from "../../../database/models/firestore/user.ts"
+import { FirestoreDatabaseContext } from "../../../context/FirestoreDatabaseContext.ts"
 
 interface PlayerModalProps {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     user: User
-    playersState: [SelectablePlayer[], React.Dispatch<React.SetStateAction<SelectablePlayer[]>>]
-    initialValue?: SelectablePlayer
+    playersState: [Player[], React.Dispatch<React.SetStateAction<Player[]>>]
+    initialValue?: Player
 }
 
 export default function PlayerModal({ isOpen, setIsOpen, user, playersState, initialValue }: PlayerModalProps) {
+
+    const firestoreDatabase = useContext(FirestoreDatabaseContext)
 
     const [players, setPlayers] = playersState
 
@@ -42,7 +44,7 @@ export default function PlayerModal({ isOpen, setIsOpen, user, playersState, ini
         if (!initialValue)
             firestoreDatabase.createPlayer(user.schoolId, firstName, lastName)
                 .then(player => {
-                    setPlayers(players.concat({ id: player.id, firstName, lastName, selected: false }))
+                    setPlayers(players.concat(player))
                     setIsOpen(false)
 
                     toast.success("Player has been created.")
@@ -53,7 +55,7 @@ export default function PlayerModal({ isOpen, setIsOpen, user, playersState, ini
                 .then(() => {
                     const newPlayersArray = players.map(player => {
                         if (player.id != initialValue.id) return player
-                        return { id: player.id, firstName, lastName, selected: player.selected }
+                        return player
                     })
                     setPlayers(newPlayersArray)
                     setIsOpen(false)

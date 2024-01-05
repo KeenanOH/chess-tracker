@@ -1,19 +1,29 @@
-import { useEffect, useState } from "react"
+import {useContext, useEffect, useState} from "react"
 import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
 
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
 import Footer from "../../components/typography/Footer.tsx"
 import Calendar from "../../components/input/Calendar.tsx"
-import List from "../../components/layouts/List.tsx"
+import List from "../../components/lists/List.tsx"
 import ConditionalRender from "../../components/layouts/ConditionalRender.tsx"
-import Button from "../../components/input/Button.tsx"
+import Button from "../../components/buttons/Button.tsx"
 import MatchModal from "./components/MatchModal.tsx"
-import { Match } from "../../database/models/match.ts"
-import {firestoreDatabase, realtimeDatabase} from "../../consts.ts"
-import { School } from "../../database/models/school.ts"
+import { Match } from "../../database/models/firestore/match.ts"
+import { School } from "../../database/models/firestore/school.ts"
 import Title from "../../components/typography/Title.tsx"
+import { FirestoreDatabaseContext } from "../../context/FirestoreDatabaseContext.ts"
+// import { RealtimeDatabaseContext } from "../../context/RealtimeDatabaseContext.ts"
+import EditableList from "../../components/lists/EditableList.tsx"
+import { MatchContext } from "../../context/MatchContext.ts"
 
 export default function AdminView() {
+
+    const navigate = useNavigate()
+
+    const { setMatch } = useContext(MatchContext)
+    const firestoreDatabase = useContext(FirestoreDatabaseContext)
+    // const realtimeDatabase = useContext(RealtimeDatabaseContext)
 
     const [allMatches, setAllMatches] = useState<Match[]>([])
     const [matches, setMatches] = useState<Match[]>([])
@@ -30,11 +40,7 @@ export default function AdminView() {
     function updateMatches(date: Date) {
         const isoDateString = date.toISOString()
 
-        setMatches(
-            allMatches.filter(match => {
-                return match.date == isoDateString
-            })
-        )
+        setMatches(allMatches.filter(match => match.date == isoDateString))
     }
 
     function openMatchModal() {
@@ -48,11 +54,13 @@ export default function AdminView() {
         setMatchesModalIsOpen(true)
     }
 
-    function publishDaysResults() {
-        matches.forEach(async match => {
-            const boards = await firestoreDatabase.getBoards(match.id)
-            await realtimeDatabase.writeResult("Week 2", match, boards)
-        })
+    function publishMatches(selectedMatches: Match[]) {
+        console.log(selectedMatches)
+    }
+
+    function openAdminMatchView(match: Match) {
+        setMatch(match)
+        navigate(`/admin/matches/${match.id}`)
     }
 
     return (
@@ -66,6 +74,7 @@ export default function AdminView() {
                     display={ match => `${match.homeSchool.name} vs. ${match.awaySchool.name} - ${new Date(match.date).toDateString()}` }
                     state={ [allMatches, setAllMatches] }
                     onEmpty="No matches found."
+                    onClick={ openAdminMatchView }
                 />
 
                 <Title>Edit Matches</Title>
@@ -74,22 +83,15 @@ export default function AdminView() {
                 </div>
 
                 <ConditionalRender bool={ date.getTime() != 0 } onFalse={ <p className="text-center py-16">Select a date to view matches.</p> }>
-                    <List
+                    <EditableList
                         title={ date.toDateString() }
                         display={ match => `${match.homeSchool.name} vs. ${match.awaySchool.name} - ${new Date(match.date).toDateString()}` }
                         state={ [matches, setMatches] }
                         onEmpty="No matches found."
+                        actions={ [{ name: "Publish", callback: publishMatches }] }
+                        trailingButton={ <Button onClick={ () => openMatchModal() }>Add Match</Button> }
                     />
                 </ConditionalRender>
-
-                <div className="w-full">
-                    <div className="mx-16 2xl:mx-96">
-                        <div className="flex space-x-8 w-full pt-8 ">
-                            <Button onClick={ () => openMatchModal() }>Add Match</Button>
-                            <Button onClick={ () => publishDaysResults() }>Publish Results</Button>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <Footer />

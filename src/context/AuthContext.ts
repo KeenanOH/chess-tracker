@@ -1,6 +1,6 @@
 import React, { createContext } from "react"
 
-import { User } from "../database/models/user.ts"
+import { User } from "../database/models/firestore/user.ts"
 
 interface IAuthContext {
     user: User

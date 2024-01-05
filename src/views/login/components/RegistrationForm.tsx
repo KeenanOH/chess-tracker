@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 
 import TextField from "../../../components/input/TextField.tsx"
-import Button from "../../../components/input/Button.tsx"
+import Button from "../../../components/buttons/Button.tsx"
 
 export interface RegistrationSubmit {
     email: string

@@ -16,7 +16,7 @@ export default function NavigationBar() {
 
     return (
         <div className="h-16 grid w-full items-center shadow-lg">
-            <div className="flex font-montserrat">
+            <div className="flex font-montserrat justify-center">
                 <Link className="text-xl ml-16 font-bold hover:opacity-75 active:opacity-50 cursor-pointer" to="/">
                     { "Chess Tracker" + (user.isAdmin ? " (Admin)": "")}
                 </Link>

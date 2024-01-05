@@ -1,26 +1,30 @@
-import {useContext, useEffect, useState} from "react"
+import { useContext, useEffect, useState } from "react"
 import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
 
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
-// import Button from "../../components/input/Button.tsx"
 import Footer from "../../components/typography/Footer.tsx"
-import { SelectableMatch } from "../../database/models/match.ts"
-import List from "../../components/layouts/List.tsx"
+import { Match } from "../../database/models/firestore/match.ts"
+import List from "../../components/lists/List.tsx"
 import PlayerModal from "./components/PlayerModal.tsx"
-import { SelectablePlayer } from "../../database/models/player.ts"
-import { firestoreDatabase } from "../../consts.ts"
+import { Player } from "../../database/models/firestore/player.ts"
 import { AuthContext } from "../../context/AuthContext.ts"
-import EditableList from "../../components/layouts/EditableList.tsx";
-import Button from "../../components/input/Button.tsx";
-
+import EditableList from "../../components/lists/EditableList.tsx"
+import Button from "../../components/buttons/Button.tsx"
+import { FirestoreDatabaseContext } from "../../context/FirestoreDatabaseContext.ts"
+import {MatchContext} from "../../context/MatchContext.ts";
 
 export default function DashboardView() {
 
+    const navigate = useNavigate()
     const { user } = useContext(AuthContext)
-    const [matches, setMatches] = useState<SelectableMatch[]>([])
-    const [players, setPlayers] = useState<SelectablePlayer[]>([])
+    const firestoreDatabase = useContext(FirestoreDatabaseContext)
+    const { setMatch } = useContext(MatchContext)
+
+    const [matches, setMatches] = useState<Match[]>([])
+    const [players, setPlayers] = useState<Player[]>([])
     const [playerModalIsOpen, setPlayerModalIsOpen] = useState(false)
-    const [playerModalInitialValue, setPlayerModalInitialValue] = useState<SelectablePlayer>()
+    const [playerModalInitialValue, setPlayerModalInitialValue] = useState<Player>()
 
     useEffect(() => {
         if (!user.schoolId) return
@@ -50,9 +54,9 @@ export default function DashboardView() {
                     }
                 }))
             })
-    }, []);
+    }, [])
 
-    function openPlayersModal(player?: SelectablePlayer) {
+    function openPlayersModal(player?: Player) {
         if (!player) {
             setPlayerModalInitialValue(undefined)
             setPlayerModalIsOpen(true)
@@ -62,7 +66,7 @@ export default function DashboardView() {
         setPlayerModalIsOpen(true)
     }
 
-    function handlePlayersDelete(players: SelectablePlayer[]) {
+    function handlePlayersDelete(players: Player[]) {
         if (!user.schoolId) return
 
         firestoreDatabase.deletePlayers(user.schoolId, players)
@@ -76,6 +80,11 @@ export default function DashboardView() {
             .catch(error => toast.error((error as Error).message))
     }
 
+    function openMatchView(match: Match) {
+        setMatch(match)
+        navigate(`/matches/${match.id}`)
+    }
+
     return (
         <div>
             <NavigationBar />
@@ -86,6 +95,7 @@ export default function DashboardView() {
                     state={ [matches, setMatches] }
                     display={ match => `${match.homeSchool.name} vs. ${match.awaySchool.name} - ${new Date(match.date).toDateString()}` }
                     onEmpty="No matches to display."
+                    onClick={ openMatchView }
                 />
 
                 <EditableList

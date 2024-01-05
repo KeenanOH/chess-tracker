@@ -2,7 +2,7 @@ import NavigationBar from "../../components/layouts/NavigationBar.tsx"
 import Footer from "../../components/typography/Footer.tsx"
 import HeroSection from "./components/HeroSection.tsx"
 import InfoSection from "./components/InfoSection.tsx"
-import ScheduleSection from "./components/ScheduleSection.tsx"
+import ResultsSection from "./components/ResultsSection.tsx";
 
 export default function LandingView() {
     return (
@@ -10,7 +10,7 @@ export default function LandingView() {
             <NavigationBar />
             <HeroSection />
             <InfoSection />
-            <ScheduleSection />
+            <ResultsSection />
             <Footer />
         </div>
     )

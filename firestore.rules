@@ -8,44 +8,51 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isAdmin() {
-    	return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    function isAdmin(uid) {
+    	return get(/databases/$(database)/documents/users/$(uid)).data.isAdmin == true;
     }
 
-    function isHomeSchool(matchId) {
-    	return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId == get(/databases/$(database)/documents/matches/$(matchId)).data.homeSchool["id"];
+    function isHomeSchool(matchId, uid) {
+    	return get(/databases/$(database)/documents/users/$(uid)).data.schoolId == get(/databases/$(database)/documents/matches/$(matchId)).data.homeSchool["id"];
     }
 
-    function isAwaySchool(matchId) {
-    	return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId == get(/databases/$(database)/documents/matches/$(matchId)).data.awaySchool["id"];
+    function isAwaySchool(matchId, uid) {
+    	return get(/databases/$(database)/documents/users/$(uid)).data.schoolId == get(/databases/$(database)/documents/matches/$(matchId)).data.awaySchool["id"];
+    }
+
+    function isValidMatchData(data) {
+    	return data.keys().hasAll(["awaySchool", "homeSchool", "date"]) &&
+      	exists(/databases/$(database)/documents/schools/$(data.awaySchool.id)) &&
+        exists(/database/$(database)/documents/schools/$(data.homeSchool.id))
     }
 
     match /users/{userId} {
-      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin(request.auth.uid));
       allow create: if isAuthenticated() && !exists(/databases/$(database)/documents/users/$(request.auth.uid)) && request.resource.data.keys().hasAll(["schoolId", "isAdmin"]) && !request.resource.data.isAdmin;
       allow update: if isAuthenticated() && request.auth.uid == userId && request.resource.data.keys().hasOnly(["schoolId"]);
-      allow write: if isAdmin();
+      allow write: if isAuthenticated() && isAdmin(request.auth.uid);
     }
 
     match /schools/{schoolId} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow write: if isAdmin(request.auth.uid);
     }
 
     match /schools/{schoolId}/players/{playerId} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin() || (isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId == schoolId);
+      allow write: if isAdmin(request.auth.uid) || (isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId == schoolId);
     }
 
     match /matches/{matchId} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow create: if isAuthenticated() && isAdmin(request.auth.uid) && isValidMatchData(request.resource.data)
+      allow write: if isAuthenticated() && isAdmin(request.auth.uid);
     }
 
     match /matches/{matchId}/boards/{boardId} {
       allow read: if isAuthenticated();
-      allow update: if isHomeSchool(matchId) || isAwaySchool(matchId);
-      allow write: if isAdmin();
+      allow update: if isAuthenticated() && (isHomeSchool(matchId, request.auth.uid) || isAwaySchool(matchId, request.auth.uid));
+      allow write: if isAuthenticated() && isAdmin(request.auth.uid);
     }
 
   }

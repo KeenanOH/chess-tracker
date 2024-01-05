@@ -2,14 +2,16 @@ import { useState, useContext } from "react"
 import { toast } from "react-toastify"
 
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
-import { ListRow } from "../../components/layouts/List.tsx"
+import ListRow from "../../components/lists/ListRow.tsx"
 import OnboardingModal from "./components/OnboardingModal.tsx"
-import { firestoreDatabase } from "../../consts.ts"
 import { AuthContext } from "../../context/AuthContext.ts"
+import { FirestoreDatabaseContext } from "../../context/FirestoreDatabaseContext.ts"
 
 export default function OnboardingView() {
 
     const { user, setUser } = useContext(AuthContext)
+    const firestoreDatabase = useContext(FirestoreDatabaseContext)
+
     const [modalPresented, setModalPresented] = useState(false)
     
     async function handleSchoolAccessCodeSubmit(schoolAccessCode: string) {

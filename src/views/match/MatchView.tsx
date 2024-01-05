@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useContext, useEffect, useState } from "react"
 
-import { Board } from "../../database/models/board.ts"
+import { Board } from "../../database/models/firestore/board.ts"
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
 import { toast } from "react-toastify"
-import BoardCell from "./components/BoardCell.tsx"
-import { Player } from "../../database/models/player.ts"
+import { Player } from "../../database/models/firestore/player.ts"
 import BoardModal from "./components/BoardModal.tsx"
-import { Match } from "../../database/models/match.ts"
-import { firestoreDatabase } from "../../consts.ts"
+import { FirestoreDatabaseContext } from "../../context/FirestoreDatabaseContext.ts"
+import BoardGrid from "./components/BoardGrid.tsx";
+import BackButton from "../../components/buttons/BackButton.tsx"
+import { MatchContext } from "../../context/MatchContext.ts"
 
 export default function MatchView() {
-    
-    // const location = useLocation()
-    const { id } = useParams()
 
-    const [match, setMatch] = useState<Match>()
+    const firestoreDatabase = useContext(FirestoreDatabaseContext)
+
+    const { match} = useContext(MatchContext)
+
     const [boards, setBoards] = useState<Board[]>([])
     const [board, setBoard] = useState<Board>()
     const [boardModalIsOpen, setBoardModalIsOpen] = useState(false)
@@ -23,20 +23,16 @@ export default function MatchView() {
     const [awayPlayers, setAwayPlayers] = useState<Player[]>([])
 
     useEffect(() => {
-        const promise = async () => {
-            if (!id) return
-
-            const match = await firestoreDatabase.getMatch(id)
-            setMatch(match)
-
-            if (!match) return
-
-            setBoards(await firestoreDatabase.getBoards(match.id))
+        if (!match) {
+            toast.error("Please navigate to this page through your dashboard.")
+            return
         }
 
-        promise()
+        firestoreDatabase.getBoards(match.id)
+            .then(boards => setBoards(boards))
             .catch(error => toast.error((error as Error).message))
-    }, [id])
+
+    }, [])
 
     function openBoardModal(board: Board) {
         if (!match) {
@@ -67,18 +63,14 @@ export default function MatchView() {
             })
     }
 
+    if (!match)
+        return <p className="text-xl">Please navigate to this page through your dashboard.</p>
+
     return (
         <div>
             <NavigationBar />
-
-            <div className="grid grid-cols-1 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 pt-16">
-                {
-                    boards.map(board => {
-                        return <BoardCell key={ board.id } board={ board } onClick={ openBoardModal } />
-                    })
-                }
-            </div>
-            
+            <BackButton />
+            <BoardGrid boards={ boards } onClick={ openBoardModal } />
             <BoardModal
                 match={ match! }
                 board={ board! }

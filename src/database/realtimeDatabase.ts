@@ -1,9 +1,14 @@
-import { Database, set, ref } from "firebase/database"
+import { Database, push, ref, get } from "firebase/database"
 
-import { realtimeDatabaseURL } from "./firebaseConsts.ts"
-import {LabeledResults} from "./models/LabeledResults.ts"
-import { Board } from "./models/board.ts"
-import { Match } from "./models/match.ts"
+// import { realtimeDatabaseURL } from "./firebaseConsts.ts"
+import { Board } from "./models/firestore/board.ts"
+import { Match } from "./models/firestore/match.ts"
+// import { Result } from "./models/realtime/result.ts"
+import { Label } from "./models/realtime/label.ts"
+import { Result } from "./models/realtime/result.ts"
+import {LabeledResults} from "./models/realtime/labeledResults.ts";
+import {School} from "./models/firestore/school.ts";
+// import {School} from "./models/firestore/school.ts";
 
 export class RealtimeDatabase {
 
@@ -23,7 +28,24 @@ export class RealtimeDatabase {
         this.database = database
     }
 
-    private scoreBoard(boards: Board[]) {
+    async createLabel(name: string): Promise<Label> {
+        const labelReference = await push(ref(this.database, "results"), { name })
+        return { id: labelReference.key!, name }
+    }
+
+    async getLabels() {
+        const snapshot = await get(ref(this.database, "results"))
+        const labels: Label[] = []
+
+        snapshot.forEach(child => {
+            const jsonData = child.toJSON() as { name: string }
+            labels.push({ id: child.key, name: jsonData.name })
+        })
+
+        return labels
+    }
+
+    private scoreBoards(boards: Board[]) {
         let homeScore = 0
         let awayScore = 0
         boards.map(board => {
@@ -40,10 +62,10 @@ export class RealtimeDatabase {
         return { homeScore, awayScore }
     }
 
-    async writeResult(label: string, match: Match, boards: Board[]) {
-        const { homeScore, awayScore } = this.scoreBoard(boards)
+    async createResult(resultsId: string, match: Match, boards: Board[]) {
+        const { homeScore, awayScore } = this.scoreBoards(boards)
 
-        await set(ref(this.database, `results/${label}`), {
+        await push(ref(this.database, `results/${resultsId}`), {
             homeSchool: match.homeSchool,
             awaySchool: match.awaySchool,
             boards: boards,
@@ -52,12 +74,43 @@ export class RealtimeDatabase {
         })
     }
 
-    static async getResults() {
-        const response = await fetch(`${realtimeDatabaseURL}results.json`)
-        const text = await response.text()
-        const jsonData = JSON.parse(JSON.stringify(text))
+    async getResults(resultsId: string): Promise<LabeledResults> {
+        const snapshot = await get(ref(this.database, `results/${resultsId}`))
+        const results: Result[] = []
+        let name = ""
 
-        return jsonData as LabeledResults[]
+        snapshot.forEach(child => {
+            if (child.key != "name") {
+                const jsonData = child.toJSON()
+                const result = jsonData as { id: string, homeSchool: School, awaySchool: School, homeScore: number, awayScore: number, boards: { [key: string]: Board } }
+                const boards: Board[] = []
+
+                for (const board in result.boards) {
+                    boards.push(result.boards[board] as Board)
+                }
+
+                results.push({
+                    id: result.id,
+                    homeSchool: result.homeSchool,
+                    awaySchool: result.awaySchool,
+                    homeScore: result.homeScore,
+                    awayScore: result.awayScore,
+                    boards
+                })
+            } else {
+                name = child.val()
+            }
+        })
+
+        return { id: name, results: results }
     }
+    // static async getResults() {
+    //     const response = await fetch(`${realtimeDatabaseURL}results.json`)
+    //     const text = await response.text()
+    //     const jsonData = JSON.parse(text)
+    //     console.log(typeof jsonData)
+    //     return jsonData as LabeledResults[]
+    //
+    // }
 
 }

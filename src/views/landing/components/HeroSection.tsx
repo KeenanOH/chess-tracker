@@ -9,9 +9,9 @@ export default function HeroSection() {
                 <div className="flex space-x-16 mt-8 items-center">
                     <a
                         className="text-xl font-bold bg-primary text-background px-8 py-4 rounded-full cursor-pointer hover:opacity-75 active:opacity-50"
-                        href="#schedule-section"
+                        href="#results-section"
                     >
-                        Schedule
+                        Results
                     </a>
                     <a
                         className="text-xl font-bold text-primary cursor-pointer hover:opacity-75 active:opacity-50"

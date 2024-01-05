@@ -1,14 +1,13 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { toast } from "react-toastify"
 
 
 import Modal from "../../../components/layouts/Modal.tsx"
 import Dropdown from "../../../components/input/Dropdown.tsx"
-import Button from "../../../components/input/Button.tsx"
-import { School } from "../../../database/models/school.ts"
-import { Match } from "../../../database/models/match.ts"
-import { firestoreDatabase } from "../../../consts.ts"
-
+import Button from "../../../components/buttons/Button.tsx"
+import { School } from "../../../database/models/firestore/school.ts"
+import { Match } from "../../../database/models/firestore/match.ts"
+import { FirestoreDatabaseContext } from "../../../context/FirestoreDatabaseContext.ts"
 
 interface MatchModalProps {
     isOpen: boolean
@@ -20,6 +19,8 @@ interface MatchModalProps {
 
 
 export default function MatchModal({ isOpen, setIsOpen, date, schools, matchesState }: MatchModalProps) {
+
+    const firestoreDatabase = useContext(FirestoreDatabaseContext)
 
     const [matches, setMatches] = matchesState
     const [homeSchoolId, setHomeSchoolId] = useState<string>()

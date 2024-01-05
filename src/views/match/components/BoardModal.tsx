@@ -1,13 +1,13 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { toast } from "react-toastify"
 
-import { Board } from "../../../database/models/board.ts"
+import { Board } from "../../../database/models/firestore/board.ts"
 import Modal from "../../../components/layouts/Modal.tsx"
-import { Player } from "../../../database/models/player.ts"
-import Button from "../../../components/input/Button.tsx"
+import { Player } from "../../../database/models/firestore/player.ts"
+import Button from "../../../components/buttons/Button.tsx"
 import Dropdown from "../../../components/input/Dropdown.tsx"
-import { Match } from "../../../database/models/match.ts"
-import { firestoreDatabase } from "../../../consts.ts"
+import { Match } from "../../../database/models/firestore/match.ts"
+import { FirestoreDatabaseContext } from "../../../context/FirestoreDatabaseContext.ts"
 
 interface BoardModalProps {
     match: Match
@@ -27,6 +27,8 @@ export default function BoardModal({ match, board, homePlayers, awayPlayers, isO
     const awayPlayerOptions = awayPlayers.map(player => {
         return { id: player.id, display: `${player.firstName} ${player.lastName}`} }
     )
+
+    const firestoreDatabase = useContext(FirestoreDatabaseContext)
 
     const [boards, setBoards] = boardsState
     const [homePlayerId, setHomePlayerId] = useState<string>()

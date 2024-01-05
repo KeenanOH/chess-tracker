@@ -1,44 +1,17 @@
 import { useContext, useState } from "react"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import { toast } from "react-toastify"
-import { useNavigate } from "react-router-dom"
 
-import { auth } from "../../database/firebaseConsts.ts"
-import LoginForm, { LoginSubmit } from "./components/LoginForm.tsx"
-import RegistrationForm, { RegistrationSubmit } from "./components/RegistrationForm.tsx"
-import { firestoreDatabase } from "../../consts.ts"
-import {AuthContext} from "../../context/AuthContext.ts";
+import LoginForm from "./components/LoginForm.tsx"
+import RegistrationForm from "./components/RegistrationForm.tsx"
+import { AuthContext } from "../../context/AuthContext.ts"
+import { FirestoreDatabaseContext } from "../../context/FirestoreDatabaseContext.ts"
+import { handleLoginFormSubmit, handleRegistrationFormSubmit } from "./callbacks.ts"
 
 export default function LoginView() {
 
     const { setUser } = useContext(AuthContext)
-    const navigate = useNavigate()
+    const firestoreDatabase = useContext(FirestoreDatabaseContext)
+
     const [showingLoginForm, setShowingLoginForm] = useState(true)
-
-    async function onLoginFormSubmit({ email, password }: LoginSubmit) {
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password)
-            const user = await firestoreDatabase.getUser(userCredential.user.uid)
-            setUser(user)
-            navigate("/dashboard")
-        } catch (error) {
-            const code = (error as Error).message
-
-            if (code.includes("auth/invalid-email")) {
-                toast.error("Invalid email")
-            } else if (code.includes("auth/invalid-password")) {
-                toast.error("Invalid password")
-            } else if (code.includes("auth/invalid-credential")) {
-                toast.error("Invalid credentials")
-            } else {
-                toast.error(code)
-            }
-        }
-    }
-
-    async function onRegistrationFormSubmit({ email, password, confirmPassword }: RegistrationSubmit) {
-        console.log(email, password, confirmPassword)
-    }
 
     return (
         <div>
@@ -46,9 +19,17 @@ export default function LoginView() {
                 <div className="flex-col py-8 px-16 w-80 sm:w-96">
                     <p className="font-montserrat text-3xl font-bold text-center">Chess Tracker</p>
                     { showingLoginForm ?
-                        <LoginForm className="mt-16" onSubmit={ onLoginFormSubmit } setShowingLoginForm={ setShowingLoginForm } />
+                        <LoginForm
+                            className="mt-16"
+                            onSubmit={ data => { handleLoginFormSubmit(firestoreDatabase, setUser, data.email, data.password).then() } }
+                            setShowingLoginForm={ setShowingLoginForm }
+                        />
                         :
-                        <RegistrationForm className="mt-16" onSubmit={ onRegistrationFormSubmit } setShowingLoginForm={ setShowingLoginForm } />
+                        <RegistrationForm
+                            className="mt-16"
+                            onSubmit={ data => { handleRegistrationFormSubmit(firestoreDatabase, setUser, data.email, data.password, data.confirmPassword).then() } }
+                            setShowingLoginForm={ setShowingLoginForm }
+                        />
                     }
                 </div>
             </div>

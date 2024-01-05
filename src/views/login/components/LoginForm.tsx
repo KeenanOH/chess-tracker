@@ -1,8 +1,11 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 
 import TextField from "../../../components/input/TextField.tsx"
-import Button from "../../../components/input/Button.tsx"
-import GoogleSignInButton from "../../../components/input/GoogleSignInButton.tsx";
+import Button from "../../../components/buttons/Button.tsx"
+import GoogleSignInButton from "../../../components/buttons/GoogleSignInButton.tsx"
+import { handleGoogleSignIn } from "../callbacks.ts"
+import { AuthContext } from "../../../context/AuthContext.ts"
+import { FirestoreDatabaseContext } from "../../../context/FirestoreDatabaseContext.ts"
 
 export interface LoginSubmit {
     email: string,
@@ -16,6 +19,9 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ className, onSubmit, setShowingLoginForm }: LoginFormProps) {
+
+    const { setUser } = useContext(AuthContext)
+    const firestoreDatabase = useContext(FirestoreDatabaseContext)
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -33,7 +39,7 @@ export default function LoginForm({ className, onSubmit, setShowingLoginForm }: 
                 <p className="text-center">--- or ---</p>
 
                 <div className="flex justify-center">
-                    <GoogleSignInButton />
+                    <GoogleSignInButton onClick={ () => { handleGoogleSignIn(firestoreDatabase, setUser).then() } } />
                 </div>
 
                 <p className="pt-8 text-base text-center text-primary hover:opacity-75 active:opacity-50 cursor-pointer" onClick={ () => setShowingLoginForm(false) }>
