@@ -1,35 +1,21 @@
-import { useContext, useEffect, useState } from "react"
-import { toast } from "react-toastify"
+import { useContext } from "react"
 
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
 import BackButton from "../../components/buttons/BackButton.tsx"
 import BoardGrid from "./components/BoardGrid.tsx"
-import { Board } from "../../database/models/firestore/board.ts"
 import { MatchContext } from "../../context/MatchContext.ts"
-import { FirestoreDatabaseContext } from "../../context/FirestoreDatabaseContext.ts"
 import Button from "../../components/buttons/Button.tsx"
 import { RealtimeDatabaseContext } from "../../context/RealtimeDatabaseContext.ts"
 import Title from "../../components/typography/Title.tsx"
+import Footer from "../../components/typography/Footer.tsx"
+import { useBoards } from "../../hooks/useBoards.ts"
 
 export default function AdminMatchView() {
 
-    const firestoreDatabase = useContext(FirestoreDatabaseContext)
     const realtimeDatabase = useContext(RealtimeDatabaseContext)
     const { match} = useContext(MatchContext)
 
-    const [boards, setBoards] = useState<Board[]>([])
-
-    useEffect(() => {
-        if (!match) {
-            toast.error("Please navigate to this page through your dashboard.")
-            return
-        }
-
-        firestoreDatabase.getBoards(match.id)
-            .then(boards => setBoards(boards))
-            .catch(error => toast.error((error as Error).message))
-
-    }, [])
+    const [boards] = useBoards()
 
     function publish() {
         realtimeDatabase.createResult("-NnMZ8UG-IIYuZQPcxkC", match!, boards)
@@ -51,6 +37,8 @@ export default function AdminMatchView() {
                     <Button onClick={ publish }>Publish</Button>
                 </div>
             </div>
+
+            <Footer />
         </div>
     )
 }
