@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest"
 import { assertFails, assertSucceeds } from "@firebase/rules-unit-testing"
 
 import { authenticatedDb, unauthenticatedDb, adminDb } from "../setup"

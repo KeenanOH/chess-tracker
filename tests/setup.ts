@@ -1,4 +1,5 @@
 import * as fs from "fs"
+import { beforeAll, afterAll } from "vitest"
 import { initializeTestEnvironment, RulesTestEnvironment } from "@firebase/rules-unit-testing"
 import { FirestoreDatabase } from "../src/database/firestoreDatabase"
 
