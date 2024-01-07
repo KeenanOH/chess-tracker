@@ -4,7 +4,7 @@ import { Board } from "../../database/models/firestore/board.ts"
 import NavigationBar from "../../components/layouts/NavigationBar.tsx"
 import { toast } from "react-toastify"
 import BoardModal from "./components/BoardModal.tsx"
-import BoardGrid from "./components/BoardGrid.tsx";
+import BoardGrid from "./components/BoardGrid.tsx"
 import BackButton from "../../components/buttons/BackButton.tsx"
 import { MatchContext } from "../../context/MatchContext.ts"
 import { useMatchPlayers } from "../../hooks/useMatchPlayers.ts"
