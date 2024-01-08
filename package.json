@@ -8,8 +8,8 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "firebase emulators:exec --only firestore --import ./firestore \"vitest --ui\"",
-    "coverage": "firebase emulators:exec --only firestore --import ./firestore \"vitest --coverage\""
+    "test": "firebase emulators:exec --only firestore --import ./firestore \"vitest run\"",
+    "coverage": "firebase emulators:exec --only firestore,database,auth --import firebase-export-1704686787214ORqDEY \"vitest run --coverage\""
   },
   "dependencies": {
     "firebase": "^10.7.1",

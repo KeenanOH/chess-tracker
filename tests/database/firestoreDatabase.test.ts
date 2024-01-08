@@ -1,7 +1,19 @@
 import { describe, it, expect } from "vitest"
 import { assertFails, assertSucceeds } from "@firebase/rules-unit-testing"
 
-import { authenticatedFirestore, unauthenticatedFirestore, adminFirestore } from "../setup"
+import {
+    authenticatedFirestore,
+    unauthenticatedFirestore,
+    adminFirestore,
+    firstSchoolId,
+    secondSchoolId,
+    firstSchoolPlayerId,
+    secondSchoolPlayerId,
+    matchId,
+    boardId,
+    regularUserId,
+    adminUserId
+} from "../setup"
 
 describe("Schools Tests", () => {
 
@@ -36,15 +48,15 @@ describe("Schools Tests", () => {
     describe("Delete Schools", () => {
 
         it("should not allow a delete for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.deleteSchool("lezb3nv0do3Oy7ad7t7u"))
+            await assertFails(unauthenticatedFirestore.deleteSchool(firstSchoolId))
         })
 
         it("should not allow a delete for an authenticated context", async () => {
-            await assertFails(authenticatedFirestore.deleteSchool("lezb3nv0do3Oy7ad7t7u"))
+            await assertFails(authenticatedFirestore.deleteSchool(firstSchoolId))
         })
 
         it("should allow a delete for an admin context", async () => {
-            await assertSucceeds(adminFirestore.deleteSchool("lezb3nv0do3Oy7ad7t7u"))
+            await assertSucceeds(adminFirestore.deleteSchool(firstSchoolId))
         })
 
     })
@@ -55,35 +67,35 @@ describe("Players Tests", () => {
 
     describe("Read Players", () => {
         it("should not allow a read for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.getPlayers("lezb3nv0do3Oy7ad7t7u"))
+            await assertFails(unauthenticatedFirestore.getPlayers(firstSchoolId))
         })
 
         it("should allow a read for an authenticated context", async () => {
-            await assertSucceeds(authenticatedFirestore.getPlayers("lezb3nv0do3Oy7ad7t7u"))
+            await assertSucceeds(authenticatedFirestore.getPlayers(firstSchoolId))
         })
     })
 
     describe("Write Players", () => {
 
         it("should not allow a write for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.createPlayer("lezb3nv0do3Oy7ad7t7u", "First", "Last"))
+            await assertFails(unauthenticatedFirestore.createPlayer(firstSchoolId, "First", "Last"))
         })
 
         it("should allow a write for an authenticated context where the schoolId  matches", async () => {
-            await assertSucceeds(authenticatedFirestore.createPlayer("lezb3nv0do3Oy7ad7t7u", "First", "Last"))
+            await assertSucceeds(authenticatedFirestore.createPlayer(firstSchoolId, "First", "Last"))
         })
 
         it("should not allow a write for an authenticated context where the schoolId does not match", async () => {
-            await assertFails(authenticatedFirestore.createPlayer("sPfURW3wBUvtLnUBp10J", "First", "Last"))
+            await assertFails(authenticatedFirestore.createPlayer(secondSchoolId, "First", "Last"))
         })
 
         it("should allow a write for an admin context where the schoolId matches", async () => {
-            await assertSucceeds(adminFirestore.createPlayer("lezb3nv0do3Oy7ad7t7u", "First", "Last"))
+            await assertSucceeds(adminFirestore.createPlayer(firstSchoolId, "First", "Last"))
 
         })
 
         it("should allow a write for an admin context where the schoolId does not match", async () => {
-            await assertSucceeds(adminFirestore.createPlayer("sPfURW3wBUvtLnUBp10J", "First", "Last"))
+            await assertSucceeds(adminFirestore.createPlayer(secondSchoolId, "First", "Last"))
         })
 
     })
@@ -91,23 +103,23 @@ describe("Players Tests", () => {
     describe("Update Players", () => {
 
         it("should not allow an update for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.updatePlayer("lezb3nv0do3Oy7ad7t7u", "4FyIbaITnlLng5JZy7bP", "First", "Last"))
+            await assertFails(unauthenticatedFirestore.updatePlayer(firstSchoolId, firstSchoolPlayerId, "First", "Last"))
         })
 
         it("should allow an update for an authenticated context where schoolIds match", async () => {
-            await assertSucceeds(authenticatedFirestore.updatePlayer("lezb3nv0do3Oy7ad7t7u", "4FyIbaITnlLng5JZy7bP", "First", "Last"))
+            await assertSucceeds(authenticatedFirestore.updatePlayer(firstSchoolId, firstSchoolPlayerId, "First", "Last"))
         })
 
         it("should not allow an update for an authenticated context where schoolIds do not match", async () => {
-            await assertFails(authenticatedFirestore.updatePlayer("sPfURW3wBUvtLnUBp10J", "HRXYCwwDWUmmekyJX0zI", "First", "Last"))
+            await assertFails(authenticatedFirestore.updatePlayer(secondSchoolId, secondSchoolPlayerId, "First", "Last"))
         })
 
         it("should allow an update for an admin context where schoolIds match", async () => {
-            await assertSucceeds(adminFirestore.updatePlayer("lezb3nv0do3Oy7ad7t7u", "4FyIbaITnlLng5JZy7bP", "First", "Last"))
+            await assertSucceeds(adminFirestore.updatePlayer(firstSchoolId, firstSchoolPlayerId, "First", "Last"))
         })
 
         it("should allow an update for an admin context where schoolIds do not match", async () => {
-            await assertSucceeds(adminFirestore.updatePlayer("sPfURW3wBUvtLnUBp10J", "HRXYCwwDWUmmekyJX0zI", "First", "Last"))
+            await assertSucceeds(adminFirestore.updatePlayer(secondSchoolId, secondSchoolPlayerId, "First", "Last"))
         })
 
     })
@@ -115,23 +127,23 @@ describe("Players Tests", () => {
     describe("Delete Players", () => {
 
         it("should not allow a delete for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.deletePlayer("lezb3nv0do3Oy7ad7t7u", "4FyIbaITnlLng5JZy7bP"))
+            await assertFails(unauthenticatedFirestore.deletePlayer(firstSchoolId, firstSchoolPlayerId))
         })
 
         it("should allow a delete for an authenticated context where schoolIds match", async () => {
-            await assertSucceeds(authenticatedFirestore.deletePlayer("lezb3nv0do3Oy7ad7t7u", "4FyIbaITnlLng5JZy7bP"))
+            await assertSucceeds(authenticatedFirestore.deletePlayer(firstSchoolId, firstSchoolPlayerId))
         })
 
         it("should not allow a delete for an authenticated context where schoolIds do not match", async () => {
-            await assertFails(authenticatedFirestore.deletePlayer("sPfURW3wBUvtLnUBp10J", "4FyIbaITnlLng5JZy7bP"))
+            await assertFails(authenticatedFirestore.deletePlayer(secondSchoolId, secondSchoolPlayerId))
         })
 
         it("should allow a delete for an admin context where schoolIds match", async () => {
-            await assertSucceeds(adminFirestore.deletePlayer("lezb3nv0do3Oy7ad7t7u", "4FyIbaITnlLng5JZy7bP"))
+            await assertSucceeds(adminFirestore.deletePlayer(firstSchoolId, firstSchoolPlayerId))
         })
 
         it("should allow a delete for an admin context where schoolIds do not match", async () => {
-            await assertSucceeds(adminFirestore.deletePlayer("sPfURW3wBUvtLnUBp10J", "4FyIbaITnlLng5JZy7bP"))
+            await assertSucceeds(adminFirestore.deletePlayer(secondSchoolId, firstSchoolPlayerId))
         })
 
     })
@@ -139,23 +151,23 @@ describe("Players Tests", () => {
     describe("Bulk Delete Players", () => {
 
         it("should not allow a delete for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.deletePlayers("lezb3nv0do3Oy7ad7t7u"))
+            await assertFails(unauthenticatedFirestore.deletePlayers(firstSchoolId))
         })
 
         it("should allow a delete for an authenticated context where schoolIds match", async () => {
-            await assertSucceeds(authenticatedFirestore.deletePlayers("lezb3nv0do3Oy7ad7t7u"))
+            await assertSucceeds(authenticatedFirestore.deletePlayers(firstSchoolId))
         })
 
         it("should not allow a delete for an authenticated context where schoolIds do not match", async () => {
-            await assertFails(authenticatedFirestore.deletePlayers("sPfURW3wBUvtLnUBp10J"))
+            await assertFails(authenticatedFirestore.deletePlayers(secondSchoolId))
         })
 
         it("should allow a delete for an admin context where schoolIds match", async () => {
-            await assertSucceeds(adminFirestore.deletePlayers("lezb3nv0do3Oy7ad7t7u"))
+            await assertSucceeds(adminFirestore.deletePlayers(firstSchoolId))
         })
 
         it("should allow a delete for an admin context where schoolIds do not match", async () => {
-            await assertSucceeds(adminFirestore.deletePlayers("sPfURW3wBUvtLnUBp10J"))
+            await assertSucceeds(adminFirestore.deletePlayers(secondSchoolId))
         })
 
     })
@@ -167,11 +179,11 @@ describe("Matches Tests", () => {
     describe("Read Match", () => {
 
         it("should not allow a read for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.getMatch("gvvs00PTkbkDYuEauIxQ"))
+            await assertFails(unauthenticatedFirestore.getMatch(matchId))
         })
 
         it("should allow a read for an authenticated context", async () => {
-            await assertSucceeds(authenticatedFirestore.getMatch("gvvs00PTkbkDYuEauIxQ"))
+            await assertSucceeds(authenticatedFirestore.getMatch(matchId))
         })
 
         it("should return undefined for a match that does not exist", async () => {
@@ -195,7 +207,7 @@ describe("Matches Tests", () => {
         })
 
         it("should allow a read for an authenticated context where school id is specified", async () => {
-            await assertSucceeds(authenticatedFirestore.getMatches({ schoolId: "lezb3nv0do3Oy7ad7t7u" }))
+            await assertSucceeds(authenticatedFirestore.getMatches({ schoolId: firstSchoolId }))
         })
 
     })
@@ -205,11 +217,11 @@ describe("Matches Tests", () => {
         it("should not allow a write for an unauthenticated context", async () => {
             await assertFails(unauthenticatedFirestore.createMatch(
                 {
-                    id: "lezb3nv0do3Oy7ad7t7u",
+                    id: firstSchoolId,
                     name: "School Name"
                 },
                 {
-                    id: "sPfURW3wBUvtLnUBp10J",
+                    id: secondSchoolId,
                     name: "School Name"
                 },
                 new Date())
@@ -219,11 +231,11 @@ describe("Matches Tests", () => {
         it("should not allow a write for an authenticated context", async () => {
             await assertFails(authenticatedFirestore.createMatch(
                 {
-                    id: "lezb3nv0do3Oy7ad7t7u",
+                    id: firstSchoolId,
                     name: "School Name"
                 },
                 {
-                    id: "sPfURW3wBUvtLnUBp10J",
+                    id: secondSchoolId,
                     name: "School Name"
                 },
                 new Date())
@@ -233,11 +245,11 @@ describe("Matches Tests", () => {
         it("should allow a write for an admin context", async () => {
             await assertSucceeds(adminFirestore.createMatch(
                 {
-                    id: "lezb3nv0do3Oy7ad7t7u",
+                    id: firstSchoolId,
                     name: "School Name"
                 },
                 {
-                    id: "sPfURW3wBUvtLnUBp10J",
+                    id: secondSchoolId,
                     name: "School Name"
                 },
                 new Date())
@@ -249,15 +261,15 @@ describe("Matches Tests", () => {
     describe("Delete Matches", () => {
 
         it("should not allow a delete for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.deleteMatch("gvvs00PTkbkDYuEauIxQ"))
+            await assertFails(unauthenticatedFirestore.deleteMatch(matchId))
         })
 
         it("should not allow a delete for an authenticated context", async () => {
-            await assertFails(authenticatedFirestore.deleteMatch("gvvs00PTkbkDYuEauIxQ"))
+            await assertFails(authenticatedFirestore.deleteMatch(matchId))
         })
 
         it("should allow a delete for an admin context", async () => {
-            await assertSucceeds(adminFirestore.deleteMatch("gvvs00PTkbkDYuEauIxQ"))
+            await assertSucceeds(adminFirestore.deleteMatch(matchId))
         })
 
     })
@@ -269,11 +281,11 @@ describe("Boards Tests", () => {
     describe("Read Boards", () => {
 
         it("should not allow a read for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.getBoards("gvvs00PTkbkDYuEauIxQ"))
+            await assertFails(unauthenticatedFirestore.getBoards(matchId))
         })
 
         it("should allow a read for an authenticated context", async () => {
-            await assertSucceeds(authenticatedFirestore.getBoards("gvvs00PTkbkDYuEauIxQ"))
+            await assertSucceeds(authenticatedFirestore.getBoards(matchId))
         })
 
     })
@@ -281,15 +293,15 @@ describe("Boards Tests", () => {
     describe("Write Boards", () => {
 
         it("should not allow a write for an unauthenticated context", async() => {
-            await assertFails(unauthenticatedFirestore.createBoard("gvvs00PTkbkDYuEauIxQ", 1))
+            await assertFails(unauthenticatedFirestore.createBoard(matchId, 1))
         })
 
         it("should not allow a write for an authenticated context", async () => {
-            await assertFails(authenticatedFirestore.createBoard("gvvs00PTkbkDYuEauIxQ", 1))
+            await assertFails(authenticatedFirestore.createBoard(matchId, 1))
         })
 
         it("should allow a write for an admin context", async () => {
-            await assertSucceeds(adminFirestore.createBoard("gvvs00PTkbkDYuEauIxQ", 1))
+            await assertSucceeds(adminFirestore.createBoard(matchId, 1))
         })
 
     })
@@ -297,15 +309,15 @@ describe("Boards Tests", () => {
     describe("Bulk Write Boards", () => {
 
         it("should not allow a write for an unauthenticated context", async() => {
-            await assertFails(unauthenticatedFirestore.createBoards("gvvs00PTkbkDYuEauIxQ"))
+            await assertFails(unauthenticatedFirestore.createBoards(matchId))
         })
 
         it("should not allow a write for an authenticated context", async () => {
-            await assertFails(authenticatedFirestore.createBoards("gvvs00PTkbkDYuEauIxQ"))
+            await assertFails(authenticatedFirestore.createBoards(matchId))
         })
 
         it("should allow a write for an admin context", async () => {
-            await assertSucceeds(adminFirestore.createBoards("gvvs00PTkbkDYuEauIxQ"))
+            await assertSucceeds(adminFirestore.createBoards(matchId))
         })
 
     })
@@ -314,17 +326,17 @@ describe("Boards Tests", () => {
 
         it("should not allow an update for an unauthenticated context", async () => {
             await assertFails(unauthenticatedFirestore.updateBoard(
-                "gvvs00PTkbkDYuEauIxQ",
-                "5O6rDXJS1fCEz0Cuqq2U",
+                matchId,
+                boardId,
                 {
-                    id: "4FyIbaITnlLng5JZy7bP",
-                    firstName: "Nobara",
-                    lastName: "Kugisaki"
-                },
-                {
-                    id: "HRXYCwwDWUmmekyJX0zI",
+                    id: firstSchoolPlayerId,
                     firstName: "Yuji",
                     lastName: "Itadori"
+                },
+                {
+                    id: secondSchoolPlayerId,
+                    firstName: "Nobara",
+                    lastName: "Kugisaki"
                 },
                 "home"
             ))
@@ -333,18 +345,18 @@ describe("Boards Tests", () => {
         // Issue with the emulator; in other environments this succeeds
         //
         // it("should allow an update for an authenticated context where schoolIds match", async () => {
-        //     await assertSucceeds(authenticatedDb.updateBoard(
-        //         "gvvs00PTkbkDYuEauIxQ",
-        //         "5O6rDXJS1fCEz0Cuqq2U",
+        //     await assertSucceeds(authenticatedFirestore.updateBoard(
+        //         matchId,
+        //         boardId,
         //         {
-        //             id: "4FyIbaITnlLng5JZy7bP",
-        //             firstName: "Nobara",
-        //             lastName: "Kugisaki"
-        //         },
-        //         {
-        //             id: "HRXYCwwDWUmmekyJX0zI",
+        //             id: firstSchoolPlayerId,
         //             firstName: "Yuji",
         //             lastName: "Itadori"
+        //         },
+        //         {
+        //             id: secondSchoolPlayerId,
+        //             firstName: "Nobara",
+        //             lastName: "Kugisaki"
         //         },
         //         "home"
         //     ))
@@ -352,17 +364,17 @@ describe("Boards Tests", () => {
 
         it("should not allow an update for an authenticated context where schoolIds do not match", async () => {
             await assertFails(authenticatedFirestore.updateBoard(
-                "jUL8XbgooTaDA1NRVQ3O",
-                "JJ8u8K6d3lz1hnsAHPNF",
+                matchId,
+                boardId,
                 {
-                    id: "4FyIbaITnlLng5JZy7bP",
-                    firstName: "Nobara",
-                    lastName: "Kugisaki"
-                },
-                {
-                    id: "HRXYCwwDWUmmekyJX0zI",
+                    id: firstSchoolPlayerId,
                     firstName: "Yuji",
                     lastName: "Itadori"
+                },
+                {
+                    id: secondSchoolPlayerId,
+                    firstName: "Nobara",
+                    lastName: "Kugisaki"
                 },
                 "home"
             ))
@@ -370,17 +382,17 @@ describe("Boards Tests", () => {
 
         it("should allow an update for an admin context where schoolIds match", async () => {
             await assertSucceeds(adminFirestore.updateBoard(
-                "gvvs00PTkbkDYuEauIxQ",
-                "5O6rDXJS1fCEz0Cuqq2U",
+                matchId,
+                boardId,
                 {
-                    id: "4FyIbaITnlLng5JZy7bP",
-                    firstName: "Nobara",
-                    lastName: "Kugisaki"
-                },
-                {
-                    id: "HRXYCwwDWUmmekyJX0zI",
+                    id: firstSchoolPlayerId,
                     firstName: "Yuji",
                     lastName: "Itadori"
+                },
+                {
+                    id: secondSchoolPlayerId,
+                    firstName: "Nobara",
+                    lastName: "Kugisaki"
                 },
                 "home"
             ))
@@ -388,17 +400,17 @@ describe("Boards Tests", () => {
 
         it("should allow an update for an admin context where schoolIds do not match", async () => {
             await assertSucceeds(adminFirestore.updateBoard(
-                "jUL8XbgooTaDA1NRVQ3O",
-                "JJ8u8K6d3lz1hnsAHPNF",
+                matchId,
+                boardId,
                 {
-                    id: "4FyIbaITnlLng5JZy7bP",
-                    firstName: "Nobara",
-                    lastName: "Kugisaki"
-                },
-                {
-                    id: "HRXYCwwDWUmmekyJX0zI",
+                    id: firstSchoolPlayerId,
                     firstName: "Yuji",
                     lastName: "Itadori"
+                },
+                {
+                    id: secondSchoolPlayerId,
+                    firstName: "Nobara",
+                    lastName: "Kugisaki"
                 },
                 "home"
             ))
@@ -409,15 +421,15 @@ describe("Boards Tests", () => {
     describe("Delete Boards", () => {
 
         it("should not allow a delete for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.deleteBoard("gvvs00PTkbkDYuEauIxQ", "5O6rDXJS1fCEz0Cuqq2U"))
+            await assertFails(unauthenticatedFirestore.deleteBoard(matchId, boardId))
         })
 
         it("should not allow a delete for an authenticated context", async () => {
-            await assertFails(authenticatedFirestore.deleteBoard("gvvs00PTkbkDYuEauIxQ", "5O6rDXJS1fCEz0Cuqq2U"))
+            await assertFails(authenticatedFirestore.deleteBoard(matchId, boardId))
         })
 
         it("should allow a delete for an admin context", async () => {
-            await assertSucceeds(adminFirestore.deleteBoard("gvvs00PTkbkDYuEauIxQ", "5O6rDXJS1fCEz0Cuqq2U"))
+            await assertSucceeds(adminFirestore.deleteBoard(matchId, boardId))
         })
 
     })
@@ -425,15 +437,15 @@ describe("Boards Tests", () => {
     describe("Bulk Delete Boards", () => {
 
         it("should not allow a delete for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.deleteBoards("gvvs00PTkbkDYuEauIxQ"))
+            await assertFails(unauthenticatedFirestore.deleteBoards(matchId))
         })
 
         it("should not allow a delete for an authenticated context", async () => {
-            await assertFails(authenticatedFirestore.deleteBoards("gvvs00PTkbkDYuEauIxQ"))
+            await assertFails(authenticatedFirestore.deleteBoards(matchId))
         })
 
         it("should allow a delete for an admin context", async () => {
-            await assertSucceeds(adminFirestore.deleteBoards("gvvs00PTkbkDYuEauIxQ"))
+            await assertSucceeds(adminFirestore.deleteBoards(matchId))
         })
 
     })
@@ -445,23 +457,23 @@ describe("Users Tests", () => {
     describe("Read Users", () => {
 
         it("should not allow a read for an unauthenticated context", async() => {
-            await assertFails(unauthenticatedFirestore.getUser("YgInYpnBfkRGQBWYcjnwIXvf14R2"))
+            await assertFails(unauthenticatedFirestore.getUser(regularUserId))
         })
 
         it("should allow a read for an authenticated context where userIds match", async () => {
-            await assertSucceeds(authenticatedFirestore.getUser("YgInYpnBfkRGQBWYcjnwIXvf14R2"))
+            await assertSucceeds(authenticatedFirestore.getUser(regularUserId))
         })
 
         it("should not allow a read for an authenticated context where userIds do not match", async () => {
-            await assertFails(authenticatedFirestore.getUser("KaJwq9qtikbytIDWzwGdkNGTo6i1"))
+            await assertFails(authenticatedFirestore.getUser(adminUserId))
         })
 
         it("should allow a read for an admin context where userIds match", async () => {
-            await assertSucceeds(adminFirestore.getUser("YgInYpnBfkRGQBWYcjnwIXvf14R2"))
+            await assertSucceeds(adminFirestore.getUser(adminUserId))
         })
 
         it("should allow a read for an admin context where userIds do not match", async () => {
-            await assertSucceeds(adminFirestore.getUser("KaJwq9qtikbytIDWzwGdkNGTo6i1"))
+            await assertSucceeds(adminFirestore.getUser(regularUserId))
         })
 
         it("should return a user with only the ID if the userId is not real", async () => {
@@ -477,23 +489,23 @@ describe("Users Tests", () => {
     describe("Update User", () => {
 
         it("should not allow an update for an unauthenticated context", async () => {
-            await assertFails(unauthenticatedFirestore.updateOrCreateUser("YgInYpnBfkRGQBWYcjnwIXvf14R2", "lezb3nv0do3Oy7ad7t7u"))
+            await assertFails(unauthenticatedFirestore.updateOrCreateUser(regularUserId, firstSchoolId))
         })
 
         it("should allow an update for an authenticated context where userIds match", async () => {
-            await assertFails(authenticatedFirestore.updateOrCreateUser("YgInYpnBfkRGQBWYcjnwIXvf14R2", "lezb3nv0do3Oy7ad7t7u"))
+            await assertFails(authenticatedFirestore.updateOrCreateUser(regularUserId, firstSchoolId))
         })
 
         it("should not allow an update for an authenticated context where userIds do not match", async () => {
-            await assertFails(authenticatedFirestore.updateOrCreateUser("KaJwq9qtikbytIDWzwGdkNGTo6i1", "lezb3nv0do3Oy7ad7t7u"))
+            await assertFails(authenticatedFirestore.updateOrCreateUser(adminUserId, firstSchoolId))
         })
 
         it("should allow an update for an admin context where userIds match", async () => {
-            await assertFails(authenticatedFirestore.updateOrCreateUser("KaJwq9qtikbytIDWzwGdkNGTo6i1", "lezb3nv0do3Oy7ad7t7u"))
+            await assertFails(authenticatedFirestore.updateOrCreateUser(adminUserId, firstSchoolId))
         })
 
-        it("should allow an update for an admin context where userIds do not match", async () => {
-            await assertFails(authenticatedFirestore.updateOrCreateUser("KaJwq9qtikbytIDWzwGdkNGTo6i1", "lezb3nv0do3Oy7ad7t7u"))
+        it("should not allow an update for an admin context where userIds do not match", async () => {
+            await assertFails(authenticatedFirestore.updateOrCreateUser(regularUserId, firstSchoolId))
         })
 
     })

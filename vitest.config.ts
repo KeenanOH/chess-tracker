@@ -3,8 +3,8 @@ import { defineConfig } from "vitest/config"
 export default defineConfig({
     test: {
         setupFiles: "tests/setup.ts",
-        coverage: {
-            reporter: "text",
-        }
+        // coverage: {
+        //     reporter: "text",
+        // }
     }
 })

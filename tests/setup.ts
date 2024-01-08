@@ -1,18 +1,25 @@
 import * as fs from "fs"
 import { beforeAll, afterAll } from "vitest"
 import { initializeTestEnvironment, RulesTestEnvironment } from "@firebase/rules-unit-testing"
+
 import { FirestoreDatabase } from "../src/database/firestoreDatabase"
-import { RealtimeDatabase } from "../src/database/realtimeDatabase"
+
+export const adminUserId = "6dYye4e96LV5rEoycwuX"
+export const regularUserId = "lmtRznZY4EMHxFiw5hKS"
+export const firstSchoolId = "AR0lmLnMRHIFWozUHuF7"
+export const secondSchoolId = "k7CaDaG0CXgZ7ARWS3yP"
+export const firstSchoolPlayerId = "JYR5JHQD3UEjzTouNIhC"
+export const secondSchoolPlayerId = "UhokocJBvZ6qGGauNtgm"
+export const matchId = "0CwIiYUjj3OajJBAL8L3"
+export const boardId = "vQvxxHwtOa0EHNyemodG"
 
 let testEnv: RulesTestEnvironment
+
 export let unauthenticatedFirestore: FirestoreDatabase
 export let authenticatedFirestore: FirestoreDatabase
 export let adminFirestore: FirestoreDatabase
-export let unauthenticatedDatabase: RealtimeDatabase
-export let authenticatedDatabase: RealtimeDatabase
-export let adminDatabase: RealtimeDatabase
 
-// TODO - fix typing issues with firebase SDK V10 / V9
+// TODO - fix typing issues with firebase SDK V10 / V9 -> look on GH for issues or make one
 beforeAll(async () => {
     testEnv = await initializeTestEnvironment({
         projectId: "chess-tracker-react",
@@ -22,8 +29,8 @@ beforeAll(async () => {
     })
 
     const unauthenticatedContext = testEnv.unauthenticatedContext()
-    const authenticatedContext = testEnv.authenticatedContext("YgInYpnBfkRGQBWYcjnwIXvf14R2")
-    const adminContext = testEnv.authenticatedContext("KaJwq9qtikbytIDWzwGdkNGTo6i1")
+    const authenticatedContext = testEnv.authenticatedContext(regularUserId)
+    const adminContext = testEnv.authenticatedContext(adminUserId)
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -34,15 +41,6 @@ beforeAll(async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     adminFirestore = new FirestoreDatabase(adminContext.firestore())
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    unauthenticatedDatabase = new RealtimeDatabase(unauthenticatedContext.database())
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    authenticatedDatabase = new RealtimeDatabase(authenticatedContext.database())
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    adminDatabase = new RealtimeDatabase(adminContext.database())
 })
 
 afterAll(async () => {
