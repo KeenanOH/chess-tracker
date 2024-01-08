@@ -34,7 +34,7 @@ export default function LoginForm({ className, onSubmit, setShowingLoginForm }: 
             </div>
             <p className="text-right text-accent">Forgot Password?</p>
             <div className="mt-8 space-y-2">
-                <Button onClick={ () => { onSubmit({ email, password }) } }>Login</Button>
+                <Button className="w-full" onClick={ () => { onSubmit({ email, password }) } }>Login</Button>
 
                 <p className="text-center">--- or ---</p>
 
