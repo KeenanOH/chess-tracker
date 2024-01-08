@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 
 import { RealtimeDatabaseContext } from "../context/RealtimeDatabaseContext.ts"
 import { Label } from "../database/models/realtime/label.ts"
 
-export function useLabels() {
+export function useLabels(): [Label[], React.Dispatch<React.SetStateAction<Label[]>>] {
 
     const realtimeDatabase = useContext(RealtimeDatabaseContext)
 
@@ -14,5 +14,5 @@ export function useLabels() {
             .then(labels => setLabels(labels))
     }, [realtimeDatabase])
 
-    return labels
+    return [labels, setLabels]
 }

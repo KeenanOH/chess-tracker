@@ -18,10 +18,10 @@ export default function ResultsSection() {
         realtimeDatabase.getLabels()
             .then(labels => setResultLabels(labels))
             .catch(error => toast.error((error as Error).message))
-    }, [])
+    }, [realtimeDatabase])
 
     return (
-        <div id="results-section" className="shadow-lg py-64">
+        <div id="results-section" className="py-64">
             <List
                 title="Results"
                 state={ [resultLabels, () => {}] }

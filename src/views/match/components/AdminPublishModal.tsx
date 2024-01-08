@@ -7,20 +7,22 @@ import { useLabels } from "../../../hooks/useLabels.ts"
 import Dropdown from "../../../components/input/Dropdown.tsx"
 import { publishMatch } from "../callbacks.ts"
 import { RealtimeDatabaseContext } from "../../../context/RealtimeDatabaseContext.ts"
-import { useBoards } from "../../../hooks/useBoards.ts"
+import { Board } from "../../../database/models/firestore/board.ts"
+import { FirestoreDatabaseContext } from "../../../context/FirestoreDatabaseContext.ts"
 
 interface AdminPublishModalProps {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+    boards: Board[]
 }
 
-export default function AdminPublishModal({ isOpen, setIsOpen }: AdminPublishModalProps) {
+export default function AdminPublishModal({ isOpen, setIsOpen, boards }: AdminPublishModalProps) {
 
     const { match} = useContext(MatchContext)
+    const firestoreDatabase = useContext(FirestoreDatabaseContext)
     const realtimeDatabase = useContext(RealtimeDatabaseContext)
 
-    const labels = useLabels()
-    const [boards] = useBoards() // TODO: remove extra read -- pass boards through props
+    const [labels] = useLabels()
 
     const [labelId, setLabelId] = useState<string>()
 
@@ -49,7 +51,7 @@ export default function AdminPublishModal({ isOpen, setIsOpen }: AdminPublishMod
             <div className="flex justify-center pt-8">
                 <Button
                     className="w-48"
-                    onClick={ () => { publishMatch(realtimeDatabase, labelId, match, boards) } }
+                    onClick={ () => { publishMatch(firestoreDatabase, realtimeDatabase, labelId, match, boards) } }
                 >
                     Confirm
                 </Button>

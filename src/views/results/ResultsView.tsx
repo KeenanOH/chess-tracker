@@ -26,7 +26,7 @@ export default function ResultsView() {
         realtimeDatabase.getResults(id)
             .then(results => setLabeledResults(results))
             .catch(error => toast.error((error as Error).message))
-    }, [])
+    }, [id, realtimeDatabase])
 
     if (!labeledResults)
         return <p className="text-3xl">Error fetching results.</p>

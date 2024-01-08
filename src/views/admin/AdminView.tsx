@@ -10,26 +10,28 @@ import Button from "../../components/buttons/Button.tsx"
 import MatchModal from "./components/MatchModal.tsx"
 import { Match } from "../../database/models/firestore/match.ts"
 import Title from "../../components/typography/Title.tsx"
-// import { RealtimeDatabaseContext } from "../../context/RealtimeDatabaseContext.ts"
 import EditableList from "../../components/lists/EditableList.tsx"
 import { MatchContext } from "../../context/MatchContext.ts"
 import { useAllMatches } from "../../hooks/useAllMatches.ts"
 import { useSchools } from "../../hooks/useSchools.ts"
 import { navigateToAdminMatchView } from "./callbacks.ts"
+import {useLabels} from "../../hooks/useLabels.ts";
+import LabelModal from "./components/LabelModal.tsx";
 
 export default function AdminView() {
 
     const navigate = useNavigate()
 
     const { setMatch } = useContext(MatchContext)
-    // const realtimeDatabase = useContext(RealtimeDatabaseContext)
 
+    const [labels, setLabels] = useLabels()
     const [allMatches, setAllMatches] = useAllMatches()
     const schools = useSchools()
 
     const [matches, setMatches] = useState<Match[]>([])
     const [date, setDate] = useState<Date>(new Date(0))
     const [matchesModalIsOpen, setMatchesModalIsOpen] = useState(false)
+    const [labelsModalIsOpen, setLabelsModalIsOpen] = useState(false)
 
     return (
         <div>
@@ -63,11 +65,29 @@ export default function AdminView() {
                         trailingButton={ <Button onClick={ () => setMatchesModalIsOpen(true) }>Add Match</Button> }
                     />
                 </ConditionalRender>
+
+                <EditableList
+                    className="pt-16"
+                    title="Results Labels"
+                    display={ label => label.name }
+                    state={ [labels, () => {}] }
+                    onEmpty="No matches found."
+                    actions={ [{ name: "Delete", destructive: true, callback: console.log }] }
+                    trailingButton={ <Button onClick={ () => setLabelsModalIsOpen(true) }>Add Label</Button> }
+                />
             </div>
 
             <Footer />
 
-            <MatchModal isOpen={ matchesModalIsOpen } setIsOpen={ setMatchesModalIsOpen } date={ date } schools={ schools } matchesState={ [matches, setMatches] } />
+            <MatchModal
+                isOpen={ matchesModalIsOpen }
+                setIsOpen={ setMatchesModalIsOpen }
+                date={ date }
+                schools={ schools }
+                matchesState={ [matches, setMatches] }
+            />
+
+            <LabelModal isOpen={ labelsModalIsOpen } setIsOpen={ setLabelsModalIsOpen } setLabels={ setLabels } />
         </div>
     )
 }

@@ -34,7 +34,7 @@ export default function AdminMatchView() {
 
             <Footer />
 
-            <AdminPublishModal isOpen={ publishModalIsOpen } setIsOpen={ setPublishModalIsOpen } />
+            <AdminPublishModal isOpen={ publishModalIsOpen } setIsOpen={ setPublishModalIsOpen } boards={ boards } />
         </div>
     )
 }
