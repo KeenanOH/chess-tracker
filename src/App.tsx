@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import {useEffect, useMemo, useState} from "react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
 import LandingView from "./views/landing/LandingView"
@@ -24,7 +24,7 @@ export default function App() {
 
     const [user, setUser] = useState<User>({ })
     const [match, setMatch] = useState<Match>()
-    const firestoreDatabase = new FirestoreDatabase(firestore)
+    const firestoreDatabase = useMemo(() => new FirestoreDatabase(firestore), [])
     const realtimeDatabase = new RealtimeDatabase(database)
 
     useEffect(() => {
