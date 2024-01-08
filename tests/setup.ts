@@ -2,12 +2,17 @@ import * as fs from "fs"
 import { beforeAll, afterAll } from "vitest"
 import { initializeTestEnvironment, RulesTestEnvironment } from "@firebase/rules-unit-testing"
 import { FirestoreDatabase } from "../src/database/firestoreDatabase"
+import { RealtimeDatabase } from "../src/database/realtimeDatabase"
 
 let testEnv: RulesTestEnvironment
-export let unauthenticatedDb : FirestoreDatabase
-export let authenticatedDb: FirestoreDatabase
-export let adminDb: FirestoreDatabase
+export let unauthenticatedFirestore: FirestoreDatabase
+export let authenticatedFirestore: FirestoreDatabase
+export let adminFirestore: FirestoreDatabase
+export let unauthenticatedDatabase: RealtimeDatabase
+export let authenticatedDatabase: RealtimeDatabase
+export let adminDatabase: RealtimeDatabase
 
+// TODO - fix typing issues with firebase SDK V10 / V9
 beforeAll(async () => {
     testEnv = await initializeTestEnvironment({
         projectId: "chess-tracker-react",
@@ -16,15 +21,28 @@ beforeAll(async () => {
         }
     })
 
+    const unauthenticatedContext = testEnv.unauthenticatedContext()
+    const authenticatedContext = testEnv.authenticatedContext("YgInYpnBfkRGQBWYcjnwIXvf14R2")
+    const adminContext = testEnv.authenticatedContext("KaJwq9qtikbytIDWzwGdkNGTo6i1")
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    unauthenticatedDb = new FirestoreDatabase(testEnv.unauthenticatedContext().firestore())
+    unauthenticatedFirestore = new FirestoreDatabase(unauthenticatedContext.firestore())
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    authenticatedDb = new FirestoreDatabase(testEnv.authenticatedContext("YgInYpnBfkRGQBWYcjnwIXvf14R2").firestore())
+    authenticatedFirestore = new FirestoreDatabase(authenticatedContext.firestore())
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    adminDb = new FirestoreDatabase(testEnv.authenticatedContext("KaJwq9qtikbytIDWzwGdkNGTo6i1").firestore())
+    adminFirestore = new FirestoreDatabase(adminContext.firestore())
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    unauthenticatedDatabase = new RealtimeDatabase(unauthenticatedContext.database())
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    authenticatedDatabase = new RealtimeDatabase(authenticatedContext.database())
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    adminDatabase = new RealtimeDatabase(adminContext.database())
 })
 
 afterAll(async () => {
