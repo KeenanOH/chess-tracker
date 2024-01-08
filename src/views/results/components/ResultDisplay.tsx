@@ -1,15 +1,10 @@
 import { Result } from "../../../database/models/realtime/result.ts"
-import {useEffect} from "react";
 
 interface ResultDisplayProps {
     result: Result
 }
 
 export default function ResultDisplay({ result }: ResultDisplayProps) {
-
-    useEffect(() => {
-        console.log(result.boards)
-    }, []);
 
     return (
         <div>
